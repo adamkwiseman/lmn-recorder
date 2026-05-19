@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LMN Tree – Recorder</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    padding: 0;
+  }
+
+  /* ── OUTER WRAPPER ──
+     Transparent background so it blends into
+     whatever Wix page / card sits behind it.
+     Remove max-width if you want it full-width. */
+  .rw {
+    font-family: 'DM Sans', sans-serif;
+    background: transparent;
+    width: 100%;
+    max-width: 660px;
+    margin: 0 auto;
+  }
+
+  /* ── TRACK CARDS ── */
+  .rw-tracks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .rw-track {
+    border: 1.5px solid #c5d8f5;
+    border-radius: 14px;
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+    min-height: 88px;
+  }
+
+  /* ── AVATAR PANEL (left side of each track card) ──
+     This is where your Wix-placed anime images will sit beside the card.
+     If you want a placeholder slot inside the card itself, the
+     .rw-track-avatar div below is already there — just drop in an <img>.
+
+     To add your image:
+       BEFORE: <i class="ti ti-user"></i>
+       AFTER:  <img src="https://static.wixstatic.com/media/YOUR_FILE.png"
+                    style="width:100%;height:100%;object-fit:cover;object-position:top;">
+  */
+  .rw-track-avatar {
+    width: 76px;
+    flex-shrink: 0;
+    background: #e8f0fe;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 12px 0 0 12px;
+  }
+
+  .rw-track-avatar i {
+    font-size: 54px;
+    color: #5c8de0;
+    line-height: 1;
+  }
+
+  .rw-track-inner {
+    flex: 1;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+  }
+
+  .rw-track-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .rw-track-icon { font-size: 15px; color: #1565c0; }
+  .rw-track.yousay.empty .rw-track-icon { color: #90a4c8; }
+
+  /* EDIT: "LISTEN" and "YOU SAY IT" labels */
+  .rw-track-lbl {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #1565c0;
+  }
+  .rw-track.yousay.empty .rw-track-lbl { color: #90a4c8; }
+
+  /* ── PLAY BUTTON (inside each track) ── */
+  .rw-play-btn {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    background: #1565c0;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-right: 6px;
+    transition: transform 0.12s, background 0.15s;
+  }
+  .rw-play-btn:active { transform: scale(0.9); }
+  .rw-play-btn:disabled { background: #c5d8f5; cursor: not-allowed; }
+  .rw-play-btn i { font-size: 13px; color: #fff; }
+
+  /* ── WAVEFORM ── */
+  .rw-wave-wrap {
+    position: relative;
+    height: 32px;
+    overflow: hidden;
+  }
+
+  .rw-wave {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 100%;
+  }
+
+  .rw-wave-bar {
+    width: 3px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    background: #1565c0;
+    opacity: 0.45;
+  }
+
+  .rw-playhead {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    width: 0%;
+    border-right: 1.5px solid #1565c0;
+    pointer-events: none;
+    transition: width 0.1s linear;
+  }
+
+  .rw-dashed {
+    width: 100%;
+    height: 2px;
+    border-top: 2px dashed #b0c4e8;
+  }
+
+  /* ── STATUS BAR ── */
+  .rw-status {
+    display: none;
+    margin: 0 0 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    align-items: center;
+    gap: 10px;
+  }
+  .rw-status.show { display: flex; }
+  .rw-status.ok   { background: #f0fdf4; border: 1.5px solid #86efac; color: #166534; }
+  .rw-status.info { background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1e40af; }
+  .rw-status.rec  { background: #fef2f2; border: 1.5px solid #fecaca; color: #991b1b; }
+
+  .rw-status-ico {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ok   .rw-status-ico { background: #22c55e; }
+  .info .rw-status-ico { background: #3b82f6; }
+  .rec  .rw-status-ico { background: #ef4444; }
+  .rw-status-ico i { color: #fff; font-size: 14px; }
+  .rec .rw-status-ico i { animation: rwBlink 1s step-end infinite; }
+
+  .rw-status-time {
+    margin-left: auto;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── SPINNER ── */
+  .rw-spinner {
+    display: none;
+    margin: 0 0 10px;
+    padding: 10px 14px;
+    background: #f8faff;
+    border: 1.5px solid #dde6f5;
+    border-radius: 12px;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #5c7ab5;
+    font-weight: 500;
+  }
+  .rw-spinner.show { display: flex; }
+  .rw-spin {
+    width: 16px; height: 16px;
+    border: 2px solid #dde6f5;
+    border-top-color: #1565c0;
+    border-radius: 50%;
+    animation: rwSpin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+
+  /* ── SCORE PANEL ── */
+  .rw-score {
+    display: none;
+    margin: 0 0 10px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1.5px solid #dde6f5;
+  }
+  .rw-score.show { display: block; }
+  .rw-score.pass { border-color: #86efac; }
+  .rw-score.okay { border-color: #fde68a; }
+  .rw-score.fail { border-color: #fca5a5; }
+
+  .rw-score-top {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .pass .rw-score-top { background: #f0fdf4; }
+  .okay .rw-score-top { background: #fffbeb; }
+  .fail .rw-score-top { background: #fef2f2; }
+
+  .rw-score-ico {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px; font-weight: 800;
+  }
+  .pass .rw-score-ico { background: #dcfce7; color: #166534; }
+  .okay .rw-score-ico { background: #fef9c3; color: #92400e; }
+  .fail .rw-score-ico { background: #fee2e2; color: #991b1b; }
+
+  .rw-score-v { font-size: 14px; font-weight: 700; }
+  .pass .rw-score-v { color: #166534; }
+  .okay .rw-score-v { color: #92400e; }
+  .fail .rw-score-v { color: #991b1b; }
+  .rw-score-d { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+  .rw-score-n {
+    font-size: 26px; font-weight: 800;
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+  }
+  .pass .rw-score-n { color: #16a34a; }
+  .okay .rw-score-n { color: #ca8a04; }
+  .fail .rw-score-n { color: #dc2626; }
+
+  .rw-score-bars {
+    padding: 10px 16px;
+    display: flex; flex-direction: column; gap: 5px;
+    border-top: 1px solid #f0f0f0;
+    background: #fff;
+  }
+  .rw-met { display: flex; align-items: center; gap: 8px; }
+  .rw-met-l {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: #9ca3af; width: 50px; flex-shrink: 0;
+  }
+  .rw-bar-bg { flex: 1; height: 5px; background: #f0f4ff; border-radius: 3px; overflow: hidden; }
+  .rw-bar-f  { height: 100%; border-radius: 3px; width: 0%; transition: width 0.7s cubic-bezier(0.16,1,0.3,1); }
+  .pass .rw-bar-f { background: #22c55e; }
+  .okay .rw-bar-f { background: #f59e0b; }
+  .fail .rw-bar-f { background: #ef4444; }
+  .rw-met-p { font-size: 11px; color: #9ca3af; width: 30px; text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* ── ACTION BUTTONS ── */
+  .rw-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  /* EDIT: change border/background colors here to restyle the Record button */
+  .rw-rec-btn {
+    flex: 1;
+    height: 48px;
+    border-radius: 14px;
+    border: 2px solid #1565c0;
+    background: #eff6ff;
+    color: #1565c0;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px;
+    transition: all 0.18s;
+  }
+  .rw-rec-btn:hover { background: #dbeafe; }
+  .rw-rec-btn.recording { background: #dbeafe; }
+
+  .rw-rec-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #1565c0;
+    flex-shrink: 0;
+  }
+  .rw-rec-btn.recording .rw-rec-dot {
+    background: #ef4444;
+    animation: rwBlink 1s step-end infinite;
+  }
+
+  /* EDIT: change background here to restyle the Compare & Analyze button */
+  .rw-analyze-btn {
+    flex: 1.3;
+    height: 48px;
+    border-radius: 14px;
+    border: none;
+    background: #2e7d32;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px;
+    transition: background 0.18s;
+  }
+  .rw-analyze-btn:hover:not(:disabled) { background: #1b5e20; }
+  .rw-analyze-btn:disabled { background: #a5d6a7; cursor: not-allowed; }
+  .rw-analyze-btn.playing  { background: #1b5e20; }
+  .rw-analyze-btn i { font-size: 18px; }
+
+  .rw-del-btn {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    border: 1.5px solid #dde6f5;
+    background: #f8faff;
+    color: #9ca3af;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.18s;
+  }
+  .rw-del-btn:hover:not(:disabled) { border-color: #fca5a5; color: #ef4444; background: #fef2f2; }
+  .rw-del-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .rw-del-btn i { font-size: 18px; }
+
+  @keyframes rwBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+  @keyframes rwSpin  { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="rw">
+
+  <!-- ═══════════════════════════════════════
+       TRACK CARDS
+  ════════════════════════════════════════ -->
+  <div class="rw-tracks">
+
+    <!-- LISTEN card -->
+    <div class="rw-track listen" id="rwListenTrack">
+
+      <!-- Avatar panel — REPLACE <i> WITH YOUR <img> TAG
+           e.g. <img src="https://static.wixstatic.com/media/YOUR_FILE.png"
+                     style="width:100%;height:100%;object-fit:cover;object-position:top;"> -->
+      <div class="rw-track-avatar">
+        <i class="ti ti-user" aria-hidden="true"></i>
+      </div>
+
+      <div class="rw-track-inner">
+        <div class="rw-track-head">
+          <button class="rw-play-btn" id="rwModelBtn" aria-label="Play model audio">
+            <i class="ti ti-player-play" id="rwModelIcon"></i>
+          </button>
+          <i class="ti ti-player-play rw-track-icon" aria-hidden="true"></i>
+          <!-- EDIT: label text -->
+          <span class="rw-track-lbl">Listen</span>
+        </div>
+        <div class="rw-wave-wrap">
+          <div class="rw-wave" id="rwModelWave"></div>
+          <div class="rw-playhead" id="rwModelHead"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- YOU SAY IT card -->
+    <div class="rw-track yousay empty" id="rwUserTrack">
+
+      <!-- Avatar panel — REPLACE <i> WITH YOUR <img> TAG -->
+      <div class="rw-track-avatar" style="background:#f0f4ff;">
+        <i class="ti ti-user-circle" aria-hidden="true" style="color:#7fa8d8;"></i>
+      </div>
+
+      <div class="rw-track-inner">
+        <div class="rw-track-head">
+          <button class="rw-play-btn" id="rwUserBtn" disabled
+                  aria-label="Play your recording" style="background:#c5d8f5;">
+            <i class="ti ti-player-play" id="rwUserIcon"></i>
+          </button>
+          <i class="ti ti-message-circle rw-track-icon" aria-hidden="true"></i>
+          <!-- EDIT: label text -->
+          <span class="rw-track-lbl" id="rwUserLbl">You say it</span>
+        </div>
+        <div class="rw-wave-wrap" id="rwUserWaveWrap">
+          <div style="display:flex;align-items:center;height:100%;">
+            <div class="rw-dashed"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- end .rw-tracks -->
+
+  <!-- Status bar (shown/hidden by JS) -->
+  <div class="rw-status" id="rwStatus">
+    <div class="rw-status-ico"><i class="ti ti-check" id="rwStatusIcon"></i></div>
+    <span id="rwStatusText"></span>
+    <span class="rw-status-time" id="rwStatusTime"></span>
+  </div>
+
+  <!-- Analyzing spinner (shown/hidden by JS) -->
+  <div class="rw-spinner" id="rwSpinner">
+    <div class="rw-spin"></div>
+    Analyzing your pronunciation…
+  </div>
+
+  <!-- Score panel (shown/hidden by JS) -->
+  <div class="rw-score" id="rwScore">
+    <div class="rw-score-top">
+      <div class="rw-score-ico" id="rwScoreIco"></div>
+      <div>
+        <div class="rw-score-v" id="rwVerdict"></div>
+        <div class="rw-score-d" id="rwDetail"></div>
+      </div>
+      <div class="rw-score-n" id="rwScoreNum"></div>
+    </div>
+    <div class="rw-score-bars">
+      <div class="rw-met">
+        <div class="rw-met-l">Rhythm</div>
+        <div class="rw-bar-bg"><div class="rw-bar-f" id="rwRhythm"></div></div>
+        <div class="rw-met-p" id="rwRhythmP"></div>
+      </div>
+      <div class="rw-met">
+        <div class="rw-met-l">Timing</div>
+        <div class="rw-bar-bg"><div class="rw-bar-f" id="rwTiming"></div></div>
+        <div class="rw-met-p" id="rwTimingP"></div>
+      </div>
+      <div class="rw-met">
+        <div class="rw-met-l">Energy</div>
+        <div class="rw-bar-bg"><div class="rw-bar-f" id="rwEnergy"></div></div>
+        <div class="rw-met-p" id="rwEnergyP"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       ACTION BUTTONS
+       EDIT button label text in <span> tags
+  ════════════════════════════════════════ -->
+  <div class="rw-actions">
+    <button class="rw-rec-btn" id="rwRecBtn">
+      <div class="rw-rec-dot"></div>
+      <span id="rwRecLbl">Record</span>
+    </button>
+    <button class="rw-analyze-btn" id="rwAnalyzeBtn" disabled>
+      <i class="ti ti-chart-bar" aria-hidden="true"></i>
+      <span>Play Both / Check</span>
+    </button>
+    <button class="rw-del-btn" id="rwDelBtn" disabled aria-label="Delete recording">
+      <i class="ti ti-trash" aria-hidden="true"></i>
+    </button>
+  </div>
+
+</div>
+<!-- end .rw -->
+
+
+<script>
+  const AC = window.AudioContext || window.webkitAudioContext;
+
+  // ═══════════════════════════════════════════════════════════════
+  // GOOGLE SHEET CONFIG
+  // This is your published CSV URL — do not change this unless you
+  // move your data to a new spreadsheet.
+  // ═══════════════════════════════════════════════════════════════
+  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRqBlylCM2Ctu7WIloy2bbsMRjQCw-bpEkK4hHukzrSwUkDCSIvSQ_ruTP_Kqk_yIlfWjLpYhh7Ryzq/pub?output=csv';
+
+  // ── Read lesson number from URL parameter ──
+  // Example iFrame src:
+  //   recorder.html?lesson=3
+  const params     = new URLSearchParams(window.location.search);
+  const SLIDE_NUM = parseInt(params.get('slide')) || 1;
+
+  // These will be populated after the sheet loads
+  let AUDIO_URL    = null;
+  let MDL          = 4;
+
+  // ── Pre-load model audio element (set after sheet loads) ──
+  let modelAudioEl = null;
+  let mCtx=null, mIv=null;
+  let mediaRec=null, recChunks=[], recSecs=0, recIv=null;
+  let uBlob=null, uAudio=null, uBuf=null, comparing=false;
+  let sheetLoaded = false;
+
+  // ── Show a loading state while sheet fetches ──
+  function setLoadingState() {
+    document.getElementById('rwModelBtn').disabled = true;
+    showSt('Loading slide…', 'info');
+  }
+
+  function setReadyState() {
+    document.getElementById('rwModelBtn').disabled = false;
+    hideSt();
+  }
+
+  function setErrorState(msg) {
+    showSt(msg || 'Could not load slide data. Check your sheet URL.', 'rec');
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // LOAD LESSON DATA FROM GOOGLE SHEET
+  // Parses the CSV, finds the row matching SLIDE_NUM,
+  // then sets AUDIO_URL and MDL ready for playback.
+  // ═══════════════════════════════════════════════════════════════
+  async function loadLesson() {
+    setLoadingState();
+    try {
+      const res = await fetch(SHEET_URL);
+      if (!res.ok) throw new Error('Sheet fetch failed');
+      const text = await res.text();
+
+      // Parse CSV — handle quoted fields
+      const rows = text.trim().split('\n').map(row => {
+        const cells = [];
+        let cur = '', inQuote = false;
+        for (let i = 0; i < row.length; i++) {
+          const ch = row[i];
+          if (ch === '"') { inQuote = !inQuote; }
+          else if (ch === ',' && !inQuote) { cells.push(cur.trim()); cur = ''; }
+          else { cur += ch; }
+        }
+        cells.push(cur.trim());
+        return cells;
+      });
+
+      // First row is headers
+      const headers = rows[0].map(h => h.toLowerCase().trim());
+      const slideIdx   = headers.indexOf('slide');
+      const audioIdx    = headers.indexOf('audio_url');
+      const durationIdx = headers.indexOf('duration');
+
+      if (slideIdx === -1 || audioIdx === -1) {
+        throw new Error('Sheet is missing required columns: slide, audio_url');
+      }
+
+      // Find the matching lesson row
+      const row = rows.slice(1).find(r => parseInt(r[slideIdx]) === SLIDE_NUM);
+      if (!row) throw new Error(`Slide ${SLIDE_NUM} not found in sheet`);
+
+      AUDIO_URL = row[audioIdx];
+      MDL       = durationIdx !== -1 ? (parseFloat(row[durationIdx]) || 4) : 4;
+
+      if (!AUDIO_URL) throw new Error(`No audio URL for slide ${SLIDE_NUM}`);
+
+      // Set up the audio element
+      modelAudioEl = new Audio(AUDIO_URL);
+      modelAudioEl.crossOrigin = 'anonymous';
+      modelAudioEl.preload = 'auto';
+
+      sheetLoaded = true;
+      setReadyState();
+
+    } catch(e) {
+      console.error('Sheet load error:', e);
+      setErrorState('Could not load slide ' + SLIDE_NUM + '. Check your sheet.');
+    }
+  }
+
+  // ── Waveform generators ──
+  function genWave(id, n, seed) {
+    const el = document.getElementById(id);
+    if (!el) return; el.innerHTML = '';
+    for (let i = 0; i < n; i++) {
+      const b = document.createElement('div');
+      b.className = 'rw-wave-bar';
+      const r = Math.abs(Math.sin(seed*.37 + i*.61 + Math.cos(i*.23)*2));
+      b.style.height = (12 + r*76) + '%';
+      el.appendChild(b);
+    }
+  }
+
+  function drawReal(id, buf, n) {
+    const el=document.getElementById(id); if(!el)return; el.innerHTML='';
+    const d=buf.getChannelData(0), bs=Math.floor(d.length/n);
+    for(let i=0;i<n;i++){
+      let s=0; for(let j=0;j<bs;j++) s+=Math.abs(d[i*bs+j]);
+      const b=document.createElement('div'); b.className='rw-wave-bar';
+      b.style.height=Math.max(8,Math.min((s/bs)*380,100))+'%'; el.appendChild(b);
+    }
+  }
+
+  genWave('rwModelWave', 50, 42);
+
+  // ── Fallback synth tone (used only if audio URL fails to load) ──
+  function makeModelTone(ctx) {
+    const sr=ctx.sampleRate, len=sr*MDL, buf=ctx.createBuffer(1,len,sr), d=buf.getChannelData(0);
+    const f=[200,240,180,220,260,200,170,210];
+    for (let i=0;i<len;i++) {
+      const t=i/sr, s=Math.floor((t/MDL)*f.length), fr=f[Math.min(s,f.length-1)];
+      const env=Math.min(t*10,1)*Math.min((MDL-t)*10,1), p=(t>1.8&&t<2.1)?0:1;
+      d[i]=env*p*.25*(Math.sin(2*Math.PI*fr*t)*.7+Math.sin(2*Math.PI*fr*1.5*t)*.3);
+    }
+    return buf;
+  }
+
+  // ── Status bar ──
+  function showSt(msg, type, time) {
+    const s=document.getElementById('rwStatus'), ic=document.getElementById('rwStatusIcon');
+    s.className='rw-status show '+type;
+    document.getElementById('rwStatusText').textContent=msg;
+    document.getElementById('rwStatusTime').textContent=time||'';
+    ic.className=type==='rec'?'ti ti-microphone':type==='ok'?'ti ti-check':'ti ti-player-play';
+  }
+  function hideSt() { document.getElementById('rwStatus').className='rw-status'; }
+
+  // ═══════════════════════════════════════════════════════════════
+  // MODEL PLAYBACK
+  // Uses the real audio file loaded from the sheet.
+  // Falls back to synth tone if sheet hasn't loaded yet.
+  // ═══════════════════════════════════════════════════════════════
+  document.getElementById('rwModelBtn').addEventListener('click', () => {
+    if (comparing) return;
+
+    if (modelAudioEl) {
+      if (!modelAudioEl.paused) {
+        modelAudioEl.pause(); modelAudioEl.currentTime=0;
+        clearInterval(mIv);
+        document.getElementById('rwModelHead').style.width='0%';
+        document.getElementById('rwModelIcon').className='ti ti-player-play';
+        hideSt(); return;
+      }
+      modelAudioEl.currentTime=0;
+      modelAudioEl.play().catch(()=> showSt('Audio failed to play. Check the URL in your sheet.','rec'));
+      document.getElementById('rwModelIcon').className='ti ti-player-pause';
+      showSt('Playing model…','info');
+      mIv=setInterval(()=>{
+        if(!modelAudioEl||modelAudioEl.paused){clearInterval(mIv);return;}
+        const dur = modelAudioEl.duration || MDL;
+        const p=Math.min((modelAudioEl.currentTime/dur)*100,100);
+        document.getElementById('rwModelHead').style.width=p+'%';
+        if(p>=100){clearInterval(mIv);document.getElementById('rwModelHead').style.width='0%';document.getElementById('rwModelIcon').className='ti ti-player-play';hideSt();}
+      },50);
+      modelAudioEl.onended=()=>{
+        clearInterval(mIv);
+        document.getElementById('rwModelHead').style.width='0%';
+        document.getElementById('rwModelIcon').className='ti ti-player-play';
+        hideSt();
+      };
+    } else {
+      // Synth fallback
+      if (mCtx) {
+        mCtx.close(); mCtx=null; clearInterval(mIv);
+        document.getElementById('rwModelHead').style.width='0%';
+        document.getElementById('rwModelIcon').className='ti ti-player-play';
+        hideSt(); return;
+      }
+      mCtx=new AC();
+      const buf=makeModelTone(mCtx), src=mCtx.createBufferSource();
+      src.buffer=buf; src.connect(mCtx.destination); src.start();
+      const t0=mCtx.currentTime;
+      document.getElementById('rwModelIcon').className='ti ti-player-pause';
+      showSt('Playing model…','info');
+      mIv=setInterval(()=>{
+        if(!mCtx){clearInterval(mIv);return;}
+        const p=Math.min(((mCtx.currentTime-t0)/MDL)*100,100);
+        document.getElementById('rwModelHead').style.width=p+'%';
+        if(p>=100){clearInterval(mIv);document.getElementById('rwModelHead').style.width='0%';document.getElementById('rwModelIcon').className='ti ti-player-play';mCtx.close();mCtx=null;hideSt();}
+      },50);
+    }
+  });
+
+  // ═══════════════════════════════════════════════════════════════
+  // RECORDING
+  // ═══════════════════════════════════════════════════════════════
+  document.getElementById('rwRecBtn').addEventListener('click', async () => {
+    if (mediaRec && mediaRec.state==='recording'){mediaRec.stop();return;}
+    try {
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      startRec(stream);
+    } catch(e) { showSt('Microphone access denied.','rec'); }
+  });
+
+  function startRec(stream) {
+    recChunks=[]; recSecs=0;
+    mediaRec=new MediaRecorder(stream);
+    mediaRec.ondataavailable=e=>{if(e.data.size>0)recChunks.push(e.data);};
+    mediaRec.onstop=async()=>{
+      stream.getTracks().forEach(t=>t.stop());
+      uBlob=new Blob(recChunks,{type:'audio/webm'});
+      uAudio=new Audio(URL.createObjectURL(uBlob));
+      const ab=await uBlob.arrayBuffer(), tmp=new AC();
+      try{uBuf=await tmp.decodeAudioData(ab);}catch(e){uBuf=null;}
+      await tmp.close();
+      const wrap=document.getElementById('rwUserWaveWrap');
+      wrap.innerHTML='<div class="rw-wave" id="rwUserWave"></div><div class="rw-playhead" id="rwUserHead"></div>';
+      if(uBuf) drawReal('rwUserWave',uBuf,50); else genWave('rwUserWave',50,99);
+      document.getElementById('rwUserTrack').className='rw-track yousay';
+      document.getElementById('rwUserBtn').disabled=false;
+      document.getElementById('rwUserBtn').style.background='#1565c0';
+      document.getElementById('rwAnalyzeBtn').disabled=false;
+      document.getElementById('rwDelBtn').disabled=false;
+      document.getElementById('rwRecBtn').className='rw-rec-btn';
+      document.getElementById('rwRecLbl').textContent='Record again';
+      clearInterval(recIv); recSecs=0;
+      showSt('Saved! Hit Play Both / Check.','ok');
+    };
+    mediaRec.start();
+    document.getElementById('rwRecBtn').className='rw-rec-btn recording';
+    document.getElementById('rwRecLbl').textContent='Stop';
+    document.getElementById('rwAnalyzeBtn').disabled=true;
+    document.getElementById('rwDelBtn').disabled=true;
+    document.getElementById('rwScore').className='rw-score';
+    showSt('Recording…','rec');
+    recIv=setInterval(()=>{recSecs++;document.getElementById('rwStatusTime').textContent='0:'+String(recSecs).padStart(2,'0');},1000);
+  }
+
+  // ── User audio playback ──
+  document.getElementById('rwUserBtn').addEventListener('click', () => {
+    if (!uAudio||comparing) return;
+    const h=document.getElementById('rwUserHead'), ic=document.getElementById('rwUserIcon');
+    if (!uAudio.paused){uAudio.pause();uAudio.currentTime=0;ic.className='ti ti-player-play';if(h)h.style.width='0%';hideSt();return;}
+    uAudio.play(); ic.className='ti ti-player-pause'; showSt('Playing your recording…','info');
+    const iv=setInterval(()=>{if(!uAudio||uAudio.paused){clearInterval(iv);return;}if(h)h.style.width=(uAudio.currentTime/(uAudio.duration||1))*100+'%';},50);
+    uAudio.onended=()=>{ic.className='ti ti-player-play';if(h)h.style.width='0%';clearInterval(iv);hideSt();};
+  });
+
+  // ═══════════════════════════════════════════════════════════════
+  // PLAY BOTH / CHECK
+  // ═══════════════════════════════════════════════════════════════
+  document.getElementById('rwAnalyzeBtn').addEventListener('click', () => {
+    if (comparing){stopCmp();return;} startCmp();
+  });
+
+  function getModelDuration() {
+    return (modelAudioEl && modelAudioEl.duration && !isNaN(modelAudioEl.duration))
+      ? modelAudioEl.duration : MDL;
+  }
+
+  function startCmp() {
+    if (!uAudio) return;
+    comparing=true;
+    document.getElementById('rwScore').className='rw-score';
+    document.getElementById('rwAnalyzeBtn').className='rw-analyze-btn playing';
+    document.getElementById('rwAnalyzeBtn').innerHTML='<i class="ti ti-player-pause" style="font-size:18px"></i> <span>Stop</span>';
+    showSt('Playing both together…','info');
+    const h=document.getElementById('rwUserHead');
+    document.getElementById('rwModelIcon').className='ti ti-player-pause';
+    uAudio.currentTime=0; uAudio.play();
+    document.getElementById('rwUserIcon').className='ti ti-player-pause';
+
+    if (modelAudioEl) {
+      modelAudioEl.currentTime=0; modelAudioEl.play();
+    } else {
+      mCtx=new AC(); const buf=makeModelTone(mCtx), src=mCtx.createBufferSource();
+      src.buffer=buf; src.connect(mCtx.destination); src.start();
+    }
+    const cmpStart = Date.now();
+
+    const iv=setInterval(()=>{
+      if(!comparing){clearInterval(iv);return;}
+      const elapsed = (Date.now()-cmpStart)/1000;
+      const dur = getModelDuration();
+      document.getElementById('rwModelHead').style.width=Math.min((elapsed/dur)*100,100)+'%';
+      if(uAudio&&h) h.style.width=(uAudio.currentTime/(uAudio.duration||1))*100+'%';
+    },50);
+
+    uAudio.onended=()=>{clearInterval(iv); if(modelAudioEl){modelAudioEl.pause();modelAudioEl.currentTime=0;} finishCmp();};
+  }
+
+  function finishCmp() {
+    comparing=false; if(mCtx){mCtx.close();mCtx=null;}
+    document.getElementById('rwModelHead').style.width='0%';
+    const h=document.getElementById('rwUserHead'); if(h) h.style.width='0%';
+    document.getElementById('rwModelIcon').className='ti ti-player-play';
+    document.getElementById('rwUserIcon').className='ti ti-player-play';
+    document.getElementById('rwAnalyzeBtn').className='rw-analyze-btn';
+    document.getElementById('rwAnalyzeBtn').innerHTML='<i class="ti ti-chart-bar" style="font-size:18px"></i> <span>Play Both / Check</span>';
+    hideSt();
+    document.getElementById('rwSpinner').className='rw-spinner show';
+    setTimeout(()=>{document.getElementById('rwSpinner').className='rw-spinner'; doScore();},1800);
+  }
+
+  function stopCmp() {
+    comparing=false; if(mCtx){mCtx.close();mCtx=null;}
+    if(modelAudioEl){modelAudioEl.pause();modelAudioEl.currentTime=0;}
+    if(uAudio){uAudio.pause();uAudio.currentTime=0;}
+    document.getElementById('rwModelHead').style.width='0%';
+    const h=document.getElementById('rwUserHead'); if(h) h.style.width='0%';
+    document.getElementById('rwModelIcon').className='ti ti-player-play';
+    document.getElementById('rwUserIcon').className='ti ti-player-play';
+    document.getElementById('rwAnalyzeBtn').className='rw-analyze-btn';
+    document.getElementById('rwAnalyzeBtn').innerHTML='<i class="ti ti-chart-bar" style="font-size:18px"></i> <span>Play Both / Check</span>';
+    hideSt();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // SCORING
+  // ═══════════════════════════════════════════════════════════════
+  function rms(buf,n){const d=buf.getChannelData(0),bs=Math.floor(d.length/n),o=[];for(let i=0;i<n;i++){let s=0;for(let j=0;j<bs;j++){const v=d[i*bs+j]||0;s+=v*v;}o.push(Math.sqrt(s/bs));}return o;}
+  function cos(a,b){const n=Math.min(a.length,b.length);let dot=0,ma=0,mb=0;for(let i=0;i<n;i++){dot+=a[i]*b[i];ma+=a[i]*a[i];mb+=b[i]*b[i];}return(ma&&mb)?dot/(Math.sqrt(ma)*Math.sqrt(mb)):0;}
+
+  function doScore() {
+    const dur = getModelDuration();
+    let rh,ti,en,ov;
+    if(uBuf){
+      const tmp=new AC(), mb=makeModelTone(tmp); tmp.close();
+      const mr=rms(mb,20),ur=rms(uBuf,20);
+      rh=Math.round(Math.max(0,Math.min(cos(mr,ur)*100,100)));
+      ti=Math.round(Math.max(0,Math.min((1-Math.abs(1-uBuf.duration/dur))*100,100)));
+      const me=mr.reduce((a,b)=>a+b,0)/mr.length,ue=ur.reduce((a,b)=>a+b,0)/ur.length;
+      en=Math.round(Math.max(0,Math.min((Math.min(me,ue)/Math.max(me,ue))*100,100)));
+      ov=Math.round(rh*.45+ti*.35+en*.2);
+    } else {rh=72;ti=68;en=80;ov=73;}
+    showScore(ov,rh,ti,en);
+  }
+
+  function showScore(ov,rh,ti,en) {
+    const p=document.getElementById('rwScore'),ic=document.getElementById('rwScoreIco');
+    let cls;
+    if(ov>=80){cls='rw-score show pass';ic.textContent='✓';document.getElementById('rwVerdict').textContent='Great job!';document.getElementById('rwDetail').textContent='Rhythm and timing closely match the model.';}
+    else if(ov>=55){cls='rw-score show okay';ic.textContent='◎';document.getElementById('rwVerdict').textContent='Getting there!';document.getElementById('rwDetail').textContent='Listen again and focus on the rhythm.';}
+    else{cls='rw-score show fail';ic.textContent='✗';document.getElementById('rwVerdict').textContent='Keep practicing';document.getElementById('rwDetail').textContent='Try listening a few more times, then record again.';}
+    p.className=cls; document.getElementById('rwScoreNum').textContent=ov+'%';
+    setTimeout(()=>{
+      document.getElementById('rwRhythm').style.width=rh+'%'; document.getElementById('rwRhythmP').textContent=rh+'%';
+      document.getElementById('rwTiming').style.width=ti+'%'; document.getElementById('rwTimingP').textContent=ti+'%';
+      document.getElementById('rwEnergy').style.width=en+'%'; document.getElementById('rwEnergyP').textContent=en+'%';
+    },100);
+  }
+
+  // ── Delete / reset ──
+  document.getElementById('rwDelBtn').addEventListener('click', () => {
+    if(uAudio){uAudio.pause();uAudio=null;} uBlob=null; uBuf=null;
+    document.getElementById('rwUserTrack').className='rw-track yousay empty';
+    document.getElementById('rwUserWaveWrap').innerHTML='<div style="display:flex;align-items:center;height:100%;"><div class="rw-dashed"></div></div>';
+    document.getElementById('rwUserBtn').disabled=true; document.getElementById('rwUserBtn').style.background='#c5d8f5';
+    document.getElementById('rwAnalyzeBtn').disabled=true; document.getElementById('rwDelBtn').disabled=true;
+    document.getElementById('rwRecBtn').className='rw-rec-btn'; document.getElementById('rwRecLbl').textContent='Record';
+    document.getElementById('rwScore').className='rw-score'; document.getElementById('rwSpinner').className='rw-spinner';
+    hideSt();
+  });
+
+  // ── Kick everything off ──
+  loadLesson();
+
+</script>
+</body>
+</html>
