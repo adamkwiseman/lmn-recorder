@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LMN Translate</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: transparent; padding: 0; margin: 0; overflow: hidden; }
+
+  .tw {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    background: #fff;
+    border: 1.5px solid #c5d8f5;
+    border-radius: 16px;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .tw-panel {
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tw-panel.left { border-right: 1.5px solid #e8f0fe; }
+
+  .tw-lang {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #1565c0;
+  }
+  .tw-lang i { font-size: 15px; }
+
+  .tw-phrase {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a2535;
+    line-height: 1.4;
+    flex: 1;
+  }
+
+  .tw-translation {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1565c0;
+    line-height: 1.4;
+    flex: 1;
+    min-height: 40px;
+  }
+
+  .tw-translation.placeholder {
+    color: #b0c4e8;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 13px;
+  }
+
+  .tw-translation.error {
+    color: #e53935;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 13px;
+  }
+
+  select {
+    width: 100%;
+    height: 32px;
+    border: 1.5px solid #c5d8f5;
+    border-radius: 8px;
+    padding: 0 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1565c0;
+    background: #f0f4ff;
+    cursor: pointer;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  select:focus { border-color: #1565c0; }
+
+  .tw-listen {
+    height: 32px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1.5px solid #c5d8f5;
+    background: #f0f4ff;
+    color: #1565c0;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+    align-self: flex-start;
+  }
+  .tw-listen.visible { display: inline-flex; }
+  .tw-listen:hover { background: #dbeafe; border-color: #1565c0; }
+  .tw-listen.speaking { background: #1565c0; color: #fff; border-color: #1565c0; }
+  .tw-listen i { font-size: 14px; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="tw">
+  <!-- LEFT: English + selector -->
+  <div class="tw-panel left">
+    <div class="tw-lang">
+      <i class="ti ti-book" aria-hidden="true"></i>
+      English
+    </div>
+    <!-- EDIT: change this phrase per slide -->
+    <div class="tw-phrase" id="twSource">How can I come here?</div>
+    <select id="twLang">
+      <option value="">Your language...</option>
+      <option disabled>── Common ──</option>
+      <option value="am">Amharic</option>
+      <option value="ar">Arabic</option>
+      <option value="bn">Bengali</option>
+      <option value="om">Oromo</option>
+      <option value="so">Somali</option>
+      <option value="ti">Tigrinya</option>
+      <option disabled>── All languages ──</option>
+      <option value="af">Afrikaans</option>
+      <option value="sq">Albanian</option>
+      <option value="hy">Armenian</option>
+      <option value="az">Azerbaijani</option>
+      <option value="eu">Basque</option>
+      <option value="be">Belarusian</option>
+      <option value="bs">Bosnian</option>
+      <option value="bg">Bulgarian</option>
+      <option value="ca">Catalan</option>
+      <option value="zh-CN">Chinese (Simplified)</option>
+      <option value="zh-TW">Chinese (Traditional)</option>
+      <option value="hr">Croatian</option>
+      <option value="cs">Czech</option>
+      <option value="da">Danish</option>
+      <option value="nl">Dutch</option>
+      <option value="eo">Esperanto</option>
+      <option value="et">Estonian</option>
+      <option value="tl">Filipino</option>
+      <option value="fi">Finnish</option>
+      <option value="fr">French</option>
+      <option value="gl">Galician</option>
+      <option value="ka">Georgian</option>
+      <option value="de">German</option>
+      <option value="el">Greek</option>
+      <option value="gu">Gujarati</option>
+      <option value="ht">Haitian Creole</option>
+      <option value="he">Hebrew</option>
+      <option value="hi">Hindi</option>
+      <option value="hu">Hungarian</option>
+      <option value="is">Icelandic</option>
+      <option value="id">Indonesian</option>
+      <option value="ga">Irish</option>
+      <option value="it">Italian</option>
+      <option value="ja">Japanese</option>
+      <option value="kn">Kannada</option>
+      <option value="kk">Kazakh</option>
+      <option value="km">Khmer</option>
+      <option value="ko">Korean</option>
+      <option value="ku">Kurdish</option>
+      <option value="ky">Kyrgyz</option>
+      <option value="lo">Lao</option>
+      <option value="lv">Latvian</option>
+      <option value="lt">Lithuanian</option>
+      <option value="mk">Macedonian</option>
+      <option value="ms">Malay</option>
+      <option value="ml">Malayalam</option>
+      <option value="mt">Maltese</option>
+      <option value="mi">Maori</option>
+      <option value="mr">Marathi</option>
+      <option value="mn">Mongolian</option>
+      <option value="my">Myanmar (Burmese)</option>
+      <option value="ne">Nepali</option>
+      <option value="no">Norwegian</option>
+      <option value="ps">Pashto</option>
+      <option value="fa">Persian</option>
+      <option value="pl">Polish</option>
+      <option value="pt">Portuguese</option>
+      <option value="pa">Punjabi</option>
+      <option value="ro">Romanian</option>
+      <option value="ru">Russian</option>
+      <option value="sr">Serbian</option>
+      <option value="si">Sinhala</option>
+      <option value="sk">Slovak</option>
+      <option value="sl">Slovenian</option>
+      <option value="es">Spanish</option>
+      <option value="sw">Swahili</option>
+      <option value="sv">Swedish</option>
+      <option value="tg">Tajik</option>
+      <option value="ta">Tamil</option>
+      <option value="te">Telugu</option>
+      <option value="th">Thai</option>
+      <option value="tr">Turkish</option>
+      <option value="tk">Turkmen</option>
+      <option value="uk">Ukrainian</option>
+      <option value="ur">Urdu</option>
+      <option value="uz">Uzbek</option>
+      <option value="vi">Vietnamese</option>
+      <option value="cy">Welsh</option>
+      <option value="xh">Xhosa</option>
+      <option value="yi">Yiddish</option>
+      <option value="yo">Yoruba</option>
+      <option value="zu">Zulu</option>
+    </select>
+  </div>
+
+  <!-- RIGHT: Translation + Listen -->
+  <div class="tw-panel">
+    <div class="tw-lang">
+      <i class="ti ti-world" aria-hidden="true"></i>
+      <span id="twLangName">Select a language</span>
+    </div>
+    <div class="tw-translation placeholder" id="twResult">Translation will appear here</div>
+    <button class="tw-listen" id="twListen" onclick="speakTranslation()">
+      <i class="ti ti-volume" id="twListenIcon" aria-hidden="true"></i>
+      Listen
+    </button>
+  </div>
+</div>
+
+<script>
+  const FUNCTION_URL = 'https://us-central1-eco-groove-475802-i4.cloudfunctions.net/lmn-translate';
+
+  const langNames = {
+    'am':'Amharic','ar':'Arabic','bn':'Bengali','om':'Oromo','so':'Somali','ti':'Tigrinya',
+    'af':'Afrikaans','sq':'Albanian','hy':'Armenian','az':'Azerbaijani','eu':'Basque',
+    'be':'Belarusian','bs':'Bosnian','bg':'Bulgarian','ca':'Catalan','zh-CN':'Chinese (Simplified)',
+    'zh-TW':'Chinese (Traditional)','hr':'Croatian','cs':'Czech','da':'Danish','nl':'Dutch',
+    'eo':'Esperanto','et':'Estonian','tl':'Filipino','fi':'Finnish','fr':'French','gl':'Galician',
+    'ka':'Georgian','de':'German','el':'Greek','gu':'Gujarati','ht':'Haitian Creole','he':'Hebrew',
+    'hi':'Hindi','hu':'Hungarian','is':'Icelandic','id':'Indonesian','ga':'Irish','it':'Italian',
+    'ja':'Japanese','kn':'Kannada','kk':'Kazakh','km':'Khmer','ko':'Korean','ku':'Kurdish',
+    'ky':'Kyrgyz','lo':'Lao','lv':'Latvian','lt':'Lithuanian','mk':'Macedonian','ms':'Malay',
+    'ml':'Malayalam','mt':'Maltese','mi':'Maori','mr':'Marathi','mn':'Mongolian','my':'Myanmar (Burmese)',
+    'ne':'Nepali','no':'Norwegian','ps':'Pashto','fa':'Persian','pl':'Polish','pt':'Portuguese',
+    'pa':'Punjabi','ro':'Romanian','ru':'Russian','sr':'Serbian','si':'Sinhala','sk':'Slovak',
+    'sl':'Slovenian','es':'Spanish','sw':'Swahili','sv':'Swedish','tg':'Tajik','ta':'Tamil',
+    'te':'Telugu','th':'Thai','tr':'Turkish','tk':'Turkmen','uk':'Ukrainian','ur':'Urdu',
+    'uz':'Uzbek','vi':'Vietnamese','cy':'Welsh','xh':'Xhosa','yi':'Yiddish','yo':'Yoruba','zu':'Zulu'
+  };
+
+  let currentAudio = null;
+
+  document.getElementById('twLang').addEventListener('change', doTranslate);
+
+  async function doTranslate() {
+    const lang   = document.getElementById('twLang').value;
+    const phrase = document.getElementById('twSource').textContent.trim();
+    const result = document.getElementById('twResult');
+    const listen = document.getElementById('twListen');
+    const langName = document.getElementById('twLangName');
+
+    if (!lang) return;
+
+    langName.textContent = langNames[lang] || lang;
+    result.className = 'tw-translation placeholder';
+    result.textContent = 'Translating…';
+    listen.classList.remove('visible');
+
+    try {
+      const res  = await fetch(FUNCTION_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'translate', text: phrase, lang })
+      });
+      const data = await res.json();
+      if (data.translation) {
+        result.textContent = data.translation;
+        result.className = 'tw-translation';
+        listen.classList.add('visible');
+      } else { throw new Error(); }
+    } catch(e) {
+      result.textContent = 'Translation failed. Try again.';
+      result.className = 'tw-translation error';
+    }
+  }
+
+  async function speakTranslation() {
+    const text = document.getElementById('twResult').textContent;
+    const lang = document.getElementById('twLang').value;
+    const btn  = document.getElementById('twListen');
+    const icon = document.getElementById('twListenIcon');
+    if (!text || !lang) return;
+
+    if (currentAudio && !currentAudio.paused) {
+      currentAudio.pause(); currentAudio.currentTime = 0;
+      btn.classList.remove('speaking'); icon.className = 'ti ti-volume'; return;
+    }
+
+    btn.classList.add('speaking');
+    icon.className = 'ti ti-loader';
+    icon.style.animation = 'spin 0.8s linear infinite';
+
+    try {
+      const res  = await fetch(FUNCTION_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'speak', text, lang })
+      });
+      const data = await res.json();
+      if (data.audio) {
+        currentAudio = new Audio('data:audio/mp3;base64,' + data.audio);
+        icon.style.animation = '';
+        icon.className = 'ti ti-volume-off';
+        currentAudio.play();
+        currentAudio.onended = () => {
+          btn.classList.remove('speaking');
+          icon.className = 'ti ti-volume';
+        };
+      } else { throw new Error(); }
+    } catch(e) {
+      btn.classList.remove('speaking');
+      icon.className = 'ti ti-volume';
+      icon.style.animation = '';
+    }
+  }
+</script>
+</body>
+</html>
