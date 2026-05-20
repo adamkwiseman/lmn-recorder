@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LMN Translate</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: transparent;
+    padding: 0;
+  }
+
+  .tw {
+    background: #fff;
+    border: 1.5px solid #c5d8f5;
+    border-radius: 16px;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .tw-header {
+    background: #f0f4ff;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1.5px solid #c5d8f5;
+  }
+
+  .tw-header i { font-size: 18px; color: #1565c0; }
+
+  .tw-header span {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1565c0;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .tw-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tw-panel { padding: 14px 16px; }
+  .tw-panel.left { border-right: 1.5px solid #e8f0fe; }
+
+  .tw-lang {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #1565c0;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tw-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a2535;
+    line-height: 1.4;
+    min-height: 48px;
+  }
+
+  .tw-text.translated { color: #1565c0; }
+
+  .tw-text.placeholder {
+    color: #b0c4e8;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 14px;
+  }
+
+  .tw-text.tw-error { color: #e53935; font-size: 13px; font-weight: 400; font-style: italic; }
+
+  .tw-footer {
+    border-top: 1.5px solid #e8f0fe;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  select {
+    flex: 1;
+    height: 38px;
+    border: 1.5px solid #c5d8f5;
+    border-radius: 10px;
+    padding: 0 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1565c0;
+    background: #f0f4ff;
+    cursor: pointer;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  select:focus { border-color: #1565c0; }
+
+  .tw-btn {
+    height: 38px;
+    padding: 0 18px;
+    border-radius: 10px;
+    border: none;
+    background: #1565c0;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s;
+    white-space: nowrap;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .tw-btn:hover { background: #0d47a1; }
+  .tw-btn:disabled { background: #90afd4; cursor: not-allowed; }
+  .tw-btn i { font-size: 15px; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="tw">
+  <div class="tw-header">
+    <i class="ti ti-world" aria-hidden="true"></i>
+    <span>Translate this phrase</span>
+  </div>
+
+  <div class="tw-body">
+    <div class="tw-panel left">
+      <div class="tw-lang">
+        <i class="ti ti-flag" aria-hidden="true"></i>
+        English
+      </div>
+      <!-- ═══════════════════════════════════════
+           EDIT: change this phrase for each slide
+      ════════════════════════════════════════ -->
+      <div class="tw-text" id="twSource">How can I come here?</div>
+    </div>
+
+    <div class="tw-panel">
+      <div class="tw-lang">
+        <i class="ti ti-flag" aria-hidden="true"></i>
+        <span id="twTargetLang">Select a language</span>
+      </div>
+      <div class="tw-text placeholder" id="twResult">Translation will appear here</div>
+    </div>
+  </div>
+
+  <div class="tw-footer">
+    <select id="twLang">
+      <option value="">Choose language...</option>
+      <option value="af">Afrikaans</option>
+      <option value="ar">Arabic</option>
+      <option value="bn">Bengali</option>
+      <option value="zh-CN">Chinese (Simplified)</option>
+      <option value="zh-TW">Chinese (Traditional)</option>
+      <option value="hr">Croatian</option>
+      <option value="cs">Czech</option>
+      <option value="da">Danish</option>
+      <option value="nl">Dutch</option>
+      <option value="fi">Finnish</option>
+      <option value="fr">French</option>
+      <option value="de">German</option>
+      <option value="el">Greek</option>
+      <option value="he">Hebrew</option>
+      <option value="hi">Hindi</option>
+      <option value="hu">Hungarian</option>
+      <option value="id">Indonesian</option>
+      <option value="it">Italian</option>
+      <option value="ja">Japanese</option>
+      <option value="ko">Korean</option>
+      <option value="ms">Malay</option>
+      <option value="no">Norwegian</option>
+      <option value="fa">Persian</option>
+      <option value="pl">Polish</option>
+      <option value="pt">Portuguese</option>
+      <option value="ro">Romanian</option>
+      <option value="ru">Russian</option>
+      <option value="sk">Slovak</option>
+      <option value="es">Spanish</option>
+      <option value="sw">Swahili</option>
+      <option value="sv">Swedish</option>
+      <option value="tl">Tagalog</option>
+      <option value="th">Thai</option>
+      <option value="tr">Turkish</option>
+      <option value="uk">Ukrainian</option>
+      <option value="ur">Urdu</option>
+      <option value="vi">Vietnamese</option>
+    </select>
+    <button class="tw-btn" id="twBtn" onclick="doTranslate()">
+      <i class="ti ti-language" aria-hidden="true"></i>
+      Translate
+    </button>
+  </div>
+</div>
+
+<script>
+  const langNames = {
+    'af':'Afrikaans','ar':'Arabic','bn':'Bengali',
+    'zh-CN':'Chinese (Simplified)','zh-TW':'Chinese (Traditional)',
+    'hr':'Croatian','cs':'Czech','da':'Danish','nl':'Dutch',
+    'fi':'Finnish','fr':'French','de':'German','el':'Greek',
+    'he':'Hebrew','hi':'Hindi','hu':'Hungarian','id':'Indonesian',
+    'it':'Italian','ja':'Japanese','ko':'Korean','ms':'Malay',
+    'no':'Norwegian','fa':'Persian','pl':'Polish','pt':'Portuguese',
+    'ro':'Romanian','ru':'Russian','sk':'Slovak','es':'Spanish',
+    'sw':'Swahili','sv':'Swedish','tl':'Tagalog','th':'Thai',
+    'tr':'Turkish','uk':'Ukrainian','ur':'Urdu','vi':'Vietnamese'
+  };
+
+  async function doTranslate() {
+    const lang   = document.getElementById('twLang').value;
+    const phrase = document.getElementById('twSource').textContent.trim();
+    const btn    = document.getElementById('twBtn');
+    const result = document.getElementById('twResult');
+    const targetLang = document.getElementById('twTargetLang');
+
+    if (!lang) {
+      result.textContent = 'Please choose a language first.';
+      result.className = 'tw-text tw-error';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ti ti-loader" style="font-size:15px;animation:spin 0.8s linear infinite;display:inline-block;"></i> Translating…';
+    result.className = 'tw-text placeholder';
+    result.textContent = 'Translating…';
+    targetLang.textContent = langNames[lang] || lang;
+
+    try {
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${lang}&dt=t&q=${encodeURIComponent(phrase)}`;
+      const res  = await fetch(url);
+      const data = await res.json();
+      const translated = data[0].map(x => x[0]).join('');
+      result.textContent = translated;
+      result.className = 'tw-text translated';
+    } catch(e) {
+      result.textContent = 'Translation failed. Please try again.';
+      result.className = 'tw-text tw-error';
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-language" style="font-size:15px"></i> Translate';
+  }
+
+  // Allow Enter key on the dropdown to trigger translation
+  document.getElementById('twLang').addEventListener('change', () => doTranslate());
+</script>
+
+</body>
+</html>
