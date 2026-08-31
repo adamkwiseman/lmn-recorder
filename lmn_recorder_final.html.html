@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LMN Tree – Recorder</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Lexend:wght@700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: auto; overflow: hidden; }
+  body {
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    padding: 0;
+    margin: 0;
+  }
+  /* ── OUTER WRAPPER ──
+     Transparent background so it blends into
+     whatever Wix page / card sits behind it.
+     Remove max-width if you want it full-width. */
+  .rw {
+    font-family: 'DM Sans', sans-serif;
+    background: transparent;
+    width: 100%;
+    max-width: 660px;
+    margin: 0 auto;
+    padding-bottom: 0;
+  }
+  /* ── TRACK CARDS ── */
+  .rw-tracks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .rw-track {
+    border: 1.5px solid #c5d8f5;
+    border-radius: 14px;
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+    min-height: 88px;
+  }
+  /* ── AVATAR PANEL (left side of each track card) ──
+     This is where your Wix-placed anime images will sit beside the card.
+     If you want a placeholder slot inside the card itself, the
+     .rw-track-avatar div below is already there — just drop in an <img>.
+     To add your image:
+       BEFORE: <i class="ti ti-user"></i>
+       AFTER:  <img src="https://static.wixstatic.com/media/YOUR_FILE.png"
+                    style="width:100%;height:100%;object-fit:cover;object-position:top;">
+  */
+  .rw-track-avatar {
+    width: 76px;
+    flex-shrink: 0;
+    background: #e8f0fe;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 12px 0 0 12px;
+  }
+  .rw-track-avatar i {
+    font-size: 54px;
+    color: #5c8de0;
+    line-height: 1;
+  }
+  .rw-track-inner {
+    flex: 1;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+  }
+  .rw-track-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .rw-track-icon { font-size: 15px; color: #1565c0; }
+  .rw-track.yousay.empty .rw-track-icon { color: #90a4c8; }
+  /* EDIT: "LISTEN" and "YOU SAY IT" labels */
+  .rw-track-lbl {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #1565c0;
+  }
+  .rw-track.yousay.empty .rw-track-lbl { color: #90a4c8; }
+  /* ── PLAY BUTTON (inside each track) ── */
+  .rw-play-btn {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    background: #1565c0;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-right: 6px;
+    transition: transform 0.12s, background 0.15s;
+  }
+  .rw-play-btn:active { transform: scale(0.9); }
+  .rw-play-btn:disabled { background: #c5d8f5; cursor: not-allowed; }
+  .rw-play-btn i { font-size: 13px; color: #fff; }
+  /* ── WAVEFORM ── */
+  .rw-wave-wrap {
+    position: relative;
+    height: 32px;
+    overflow: hidden;
+  }
+  .rw-wave {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 100%;
+  }
+  .rw-wave-bar {
+    width: 3px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    background: #1565c0;
+    opacity: 0.45;
+  }
+  .rw-playhead {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    width: 0%;
+    border-right: 1.5px solid #1565c0;
+    pointer-events: none;
+    transition: width 0.1s linear;
+  }
+  .rw-dashed {
+    width: 100%;
+    height: 2px;
+    border-top: 2px dashed #b0c4e8;
+  }
+  /* ── STATUS BAR ── */
+  .rw-status {
+    display: none;
+    margin: 0 0 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    align-items: center;
+    gap: 10px;
+  }
+  .rw-status.show { display: flex; }
+  .rw-status.ok   { background: #f0fdf4; border: 1.5px solid #86efac; color: #166534; }
+  .rw-status.info { background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1e40af; }
+  .rw-status.rec  { background: #fef2f2; border: 1.5px solid #fecaca; color: #991b1b; }
+  .rw-status-ico {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ok   .rw-status-ico { background: #22c55e; }
+  .info .rw-status-ico { background: #3b82f6; }
+  .rec  .rw-status-ico { background: #ef4444; }
+  .rw-status-ico i { color: #fff; font-size: 14px; }
+  .rec .rw-status-ico i { animation: rwBlink 1s step-end infinite; }
+  .rw-status-time {
+    margin-left: auto;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  /* ── SPINNER ── */
+  .rw-spinner {
+    display: none;
+    margin: 0 0 10px;
+    padding: 10px 14px;
+    background: #f8faff;
+    border: 1.5px solid #dde6f5;
+    border-radius: 12px;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #5c7ab5;
+    font-weight: 500;
+  }
+  .rw-spinner.show { display: flex; }
+  .rw-spin {
+    width: 16px; height: 16px;
+    border: 2px solid #dde6f5;
+    border-top-color: #1565c0;
+    border-radius: 50%;
+    animation: rwSpin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  /* ── SCORE PANEL ── */
+  .rw-score {
+    display: none;
+    margin: 0 0 10px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1.5px solid #dde6f5;
+  }
+  .rw-score.show { display: block; }
+  .rw-score.pass { border-color: #86efac; }
+  .rw-score.okay { border-color: #fde68a; }
+  .rw-score.fail { border-color: #fca5a5; }
+  .rw-score-top {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .pass .rw-score-top { background: #f0fdf4; }
+  .okay .rw-score-top { background: #fffbeb; }
+  .fail .rw-score-top { background: #fef2f2; }
+  .rw-score-ico {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px; font-weight: 800;
+  }
+  .pass .rw-score-ico { background: #dcfce7; color: #166534; }
+  .okay .rw-score-ico { background: #fef9c3; color: #92400e; }
+  .fail .rw-score-ico { background: #fee2e2; color: #991b1b; }
+  .rw-score-v { font-size: 14px; font-weight: 700; }
+  .pass .rw-score-v { color: #166534; }
+  .okay .rw-score-v { color: #92400e; }
+  .fail .rw-score-v { color: #991b1b; }
+  .rw-score-d { font-size: 12px; color: #6b7280; margin-top: 2px; }
+  .rw-score-n {
+    font-size: 26px; font-weight: 800;
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+  }
+  .pass .rw-score-n { color: #16a34a; }
+  .okay .rw-score-n { color: #ca8a04; }
+  .fail .rw-score-n { color: #dc2626; }
+  .rw-score-bars {
+    padding: 10px 16px;
+    display: flex; flex-direction: column; gap: 5px;
+    border-top: 1px solid #f0f0f0;
+    background: #fff;
+  }
+  .rw-met { display: flex; align-items: center; gap: 8px; }
+  .rw-met-l {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: #9ca3af; width: 50px; flex-shrink: 0;
+  }
+  .rw-bar-bg { flex: 1; height: 5px; background: #f0f4ff; border-radius: 3px; overflow: hidden; }
+  .rw-bar-f  { height: 100%; border-radius: 3px; width: 0%; transition: width 0.7s cubic-bezier(0.16,1,0.3,1); }
+  .pass .rw-bar-f { background: #22c55e; }
+  .okay .rw-bar-f { background: #f59e0b; }
+  .fail .rw-bar-f { background: #ef4444; }
+  .rw-met-p { font-size: 11px; color: #9ca3af; width: 30px; text-align: right; font-variant-numeric: tabular-nums; }
+  /* ── ACTION BUTTONS ── */
+  .rw-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  /* EDIT: change border/background colors here to restyle the Record button */
+  .rw-rec-btn {
+    flex: 1;
+    height: 48px;
+    border-radius: 14px;
+    border: 2px solid #1565c0;
+    background: #eff6ff;
+    color: #1565c0;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px;
+    transition: all 0.18s;
+  }
+  .rw-rec-btn:hover { background: #dbeafe; }
+  .rw-rec-btn.recording { background: #dbeafe; }
+  .rw-rec-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #1565c0;
+    flex-shrink: 0;
+  }
+  .rw-rec-btn.recording .rw-rec-dot {
+    background: #ef4444;
+    animation: rwBlink 1s step-end infinite;
+  }
+  /* EDIT: change background here to restyle the Compare & Analyze button */
+  .rw-analyze-btn {
+    flex: 1.3;
+    height: 48px;
+    border-radius: 14px;
+    border: none;
+    background: #2e7d32;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px;
+    transition: background 0.18s;
+  }
+  .rw-analyze-btn:hover:not(:disabled) { background: #1b5e20; }
+  .rw-analyze-btn:disabled { background: #a5d6a7; cursor: not-allowed; }
+  .rw-analyze-btn.playing  { background: #1b5e20; }
+  .rw-analyze-btn i { font-size: 18px; }
+  .rw-del-btn {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    border: 1.5px solid #dde6f5;
+    background: #f8faff;
+    color: #9ca3af;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.18s;
+  }
+  .rw-del-btn:hover:not(:disabled) { border-color: #fca5a5; color: #ef4444; background: #fef2f2; }
+  .rw-del-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .rw-del-btn i { font-size: 18px; }
+  @keyframes rwBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+  @keyframes rwSpin  { to { transform: rotate(360deg); } }
+  /* ── PHRASE DISPLAY BOX ── */
+  .rw-phrase-box {
+    background: #eff6ff;
+    border: 2px solid #bfdbfe;
+    border-radius: 16px;
+    padding: 16px 22px;
+    margin-bottom: 12px;
+    text-align: center;
+    min-height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .rw-phrase-text {
+    font-family: 'Lexend', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: #1e3a6e;
+    line-height: 1.35;
+    letter-spacing: 0.01em;
+  }
+  .rw-phrase-text.loading {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    color: #93b4db;
+  }
+  /* ══════════════════════════════════════════════════════════
+     LEAD-IN / GET-READY OVERLAY
+     Covers the widget the moment Record is tapped. Runs a 3-2-1
+     "get ready" countdown, then flips a GREEN light on at the exact
+     instant capture begins, with a live waveform that reacts to the
+     student's voice so they can see the mic is picking them up.
+  ══════════════════════════════════════════════════════════ */
+  .rw-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(240, 245, 255, 0.92);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+  }
+  .rw-overlay.show { display: flex; }
+  /* Phase label: "Get ready…" / "Speak now" */
+  .rw-ov-label {
+    font-family: 'Lexend', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    transition: color 0.2s;
+  }
+  .rw-overlay.ready     .rw-ov-label { color: #b45309; }
+  .rw-overlay.recording .rw-ov-label { color: #15803d; }
+  /* The big light: amber ring + number while counting, green when live */
+  .rw-ov-light {
+    width: 118px; height: 118px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+    border: 5px solid;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .rw-overlay.ready .rw-ov-light {
+    border-color: #f59e0b;
+    background: #fffbeb;
+  }
+  .rw-overlay.recording .rw-ov-light {
+    border-color: #22c55e;
+    background: #f0fdf4;
+    animation: rwPulse 1.15s ease-out infinite;
+  }
+  @keyframes rwPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.45); }
+    70%  { box-shadow: 0 0 0 18px rgba(34,197,94,0); }
+    100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+  }
+  /* Countdown number (shown in ready phase) */
+  .rw-ov-count {
+    font-family: 'Lexend', sans-serif;
+    font-weight: 700;
+    font-size: 58px;
+    line-height: 1;
+    color: #b45309;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Mic glyph (shown in recording phase) */
+  .rw-ov-mic {
+    font-size: 52px;
+    color: #16a34a;
+    line-height: 1;
+    display: none;
+  }
+  .rw-overlay.recording .rw-ov-count { display: none; }
+  .rw-overlay.recording .rw-ov-mic  { display: block; }
+  /* Live waveform strip */
+  .rw-ov-wave {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    height: 60px;
+    width: 100%;
+    max-width: 380px;
+    margin: 4px 0 6px;
+  }
+  .rw-ov-bar {
+    width: 4px;
+    min-height: 6%;
+    height: 8%;
+    border-radius: 3px;
+    background: #cbd5e1;
+    transition: background 0.2s;
+  }
+  .rw-overlay.recording .rw-ov-bar { background: #22c55e; }
+  /* Hint + timer */
+  .rw-ov-hint {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 4px;
+    min-height: 18px;
+  }
+  .rw-ov-timer {
+    font-family: 'Lexend', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: #15803d;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 16px;
+    min-height: 24px;
+    visibility: hidden;
+  }
+  .rw-overlay.recording .rw-ov-timer { visibility: visible; }
+  /* Overlay control button (Cancel while counting, Stop while recording) */
+  .rw-ov-btn {
+    height: 52px;
+    min-width: 200px;
+    padding: 0 26px;
+    border-radius: 14px;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px;
+    transition: background 0.18s, transform 0.1s;
+  }
+  .rw-ov-btn:active { transform: scale(0.97); }
+  .rw-overlay.ready .rw-ov-btn {
+    background: #fff7ed; color: #b45309; border: 2px solid #fcd34d;
+  }
+  .rw-overlay.ready .rw-ov-btn:hover { background: #ffedd5; }
+  .rw-overlay.recording .rw-ov-btn {
+    background: #dc2626; color: #fff;
+  }
+  .rw-overlay.recording .rw-ov-btn:hover { background: #b91c1c; }
+  .rw-ov-btn i { font-size: 18px; }
+</style>
+</head>
+<body>
+<div style="text-align:right;padding:0 0 8px 0;"><button onclick="lmnFinish()" style="background:#f0f4ff;border:1.5px solid #c5d8f5;color:#1565c0;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;padding:6px 16px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">✕ Close &amp; return</button></div>
+<div class="rw">
+  <!-- ═══════════════════════════════════════
+       PHRASE DISPLAY
+  ════════════════════════════════════════ -->
+  <div class="rw-phrase-box">
+    <div class="rw-phrase-text loading" id="rwPhraseText">Loading…</div>
+  </div>
+    <!-- ═══════════════════════════════════════
+       TRACK CARDS
+  ════════════════════════════════════════ -->
+  <div class="rw-tracks">
+    <!-- LISTEN card -->
+    <div class="rw-track listen" id="rwListenTrack">
+      <!-- Avatar panel — REPLACE <i> WITH YOUR <img> TAG
+           e.g. <img src="https://static.wixstatic.com/media/YOUR_FILE.png"
+                     style="width:100%;height:100%;object-fit:cover;object-position:top;"> -->
+      <div class="rw-track-avatar">
+        <i class="ti ti-user" aria-hidden="true"></i>
+      </div>
+      <div class="rw-track-inner">
+        <div class="rw-track-head">
+          <button class="rw-play-btn" id="rwModelBtn" aria-label="Play model audio">
+            <i class="ti ti-player-play" id="rwModelIcon"></i>
+          </button>
+          <i class="ti ti-player-play rw-track-icon" aria-hidden="true"></i>
+          <!-- EDIT: label text -->
+          <span class="rw-track-lbl">Listen</span>
+        </div>
+        <div class="rw-wave-wrap">
+          <div class="rw-wave" id="rwModelWave"></div>
+          <div class="rw-playhead" id="rwModelHead"></div>
+        </div>
+      </div>
+    </div>
+    <!-- YOU SAY IT card -->
+    <div class="rw-track yousay empty" id="rwUserTrack">
+      <!-- Avatar panel — REPLACE <i> WITH YOUR <img> TAG -->
+      <div class="rw-track-avatar" style="background:#f0f4ff;">
+        <i class="ti ti-user-circle" aria-hidden="true" style="color:#7fa8d8;"></i>
+      </div>
+      <div class="rw-track-inner">
+        <div class="rw-track-head">
+          <button class="rw-play-btn" id="rwUserBtn" disabled
+                  aria-label="Play your recording" style="background:#c5d8f5;">
+            <i class="ti ti-player-play" id="rwUserIcon"></i>
+          </button>
+          <i class="ti ti-message-circle rw-track-icon" aria-hidden="true"></i>
+          <!-- EDIT: label text -->
+          <span class="rw-track-lbl" id="rwUserLbl">You say it</span>
+        </div>
+        <div class="rw-wave-wrap" id="rwUserWaveWrap">
+          <div style="display:flex;align-items:center;height:100%;">
+            <div class="rw-dashed"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:center;margin:-4px 0 6px;">
+    <button class="rw-del-btn" id="rwDelBtn" disabled aria-label="Delete recording">
+      <i class="ti ti-trash" aria-hidden="true"></i>
+    </button>
+  </div>
+  <!-- end .rw-tracks -->
+  <!-- Status bar (shown/hidden by JS) -->
+  <div class="rw-status" id="rwStatus">
+    <div class="rw-status-ico"><i class="ti ti-check" id="rwStatusIcon"></i></div>
+    <span id="rwStatusText"></span>
+    <span class="rw-status-time" id="rwStatusTime"></span>
+  </div>
+  <!-- Analyzing spinner (shown/hidden by JS) -->
+  <div class="rw-spinner" id="rwSpinner">
+    <div class="rw-spin"></div>
+    Analyzing your pronunciation…
+  </div>
+  <!-- Score panel (shown/hidden by JS) -->
+  <div class="rw-score" id="rwScore">
+    <div class="rw-score-top">
+      <div class="rw-score-ico" id="rwScoreIco"></div>
+      <div>
+        <div class="rw-score-v" id="rwVerdict"></div>
+        <div class="rw-score-d" id="rwDetail"></div>
+      </div>
+      <div class="rw-score-n" id="rwScoreNum"></div>
+    </div>
+    <div class="rw-score-bars">
+      <div class="rw-met">
+        <div class="rw-met-l">Rhythm</div>
+        <div class="rw-bar-bg"><div class="rw-bar-f" id="rwRhythm"></div></div>
+        <div class="rw-met-p" id="rwRhythmP"></div>
+      </div>
+      <div class="rw-met">
+        <div class="rw-met-l">Timing</div>
+        <div class="rw-bar-bg"><div class="rw-bar-f" id="rwTiming"></div></div>
+        <div class="rw-met-p" id="rwTimingP"></div>
+      </div>
+      <div class="rw-met">
+        <div class="rw-met-l">Energy</div>
+        <div class="rw-bar-bg"><div class="rw-bar-f" id="rwEnergy"></div></div>
+        <div class="rw-met-p" id="rwEnergyP"></div>
+      </div>
+    </div>
+  </div>
+  <!-- ═══════════════════════════════════════
+       ACTION BUTTONS
+       EDIT button label text in <span> tags
+  ════════════════════════════════════════ -->
+  <div class="rw-actions">
+    <button class="rw-rec-btn" id="rwRecBtn">
+      <div class="rw-rec-dot"></div>
+      <span id="rwRecLbl">Record</span>
+    </button>
+    <button class="rw-analyze-btn" id="rwAnalyzeBtn" disabled>
+      <i class="ti ti-chart-bar" aria-hidden="true"></i>
+      <span>Play Both / Check</span>
+    </button>
+  </div>
+  <button
+    onclick="window.close()"
+    style="width:100%;height:48px;margin-top:8px;margin-bottom:0;border-radius:14px;border:none;background:#2e7d32;color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.18s;"
+    onmouseover="this.style.background='#1b5e20'"
+    onmouseout="this.style.background='#2e7d32'">
+    <i class="ti ti-check" aria-hidden="true" style="font-size:18px;"></i>
+    Finished!
+  </button>
+</div>
+<!-- end .rw -->
+
+<!-- ═══════════════════════════════════════
+     LEAD-IN / GET-READY OVERLAY
+     (populated + driven entirely by JS below)
+════════════════════════════════════════ -->
+<div class="rw-overlay" id="rwOverlay" role="dialog" aria-live="assertive">
+  <div class="rw-ov-label" id="rwOvLabel">Get ready…</div>
+  <div class="rw-ov-light">
+    <div class="rw-ov-count" id="rwOvCount">3</div>
+    <i class="ti ti-microphone rw-ov-mic" aria-hidden="true"></i>
+  </div>
+  <div class="rw-ov-wave" id="rwOvWave"></div>
+  <div class="rw-ov-hint" id="rwOvHint">Wait for the green light, then speak.</div>
+  <div class="rw-ov-timer" id="rwOvTimer">0:00</div>
+  <button class="rw-ov-btn" id="rwOvBtn"><i class="ti ti-x"></i><span>Cancel</span></button>
+</div>
+
+<!-- Supabase JS client (Step 3 migration) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const AC = window.AudioContext || window.webkitAudioContext;
+ // Embedded in the app: tell the shell to close the recorder overlay.
+  // Standalone-safe too (postMessage to self is ignored; window.close() no-ops in a frame).
+  function lmnFinish(){
+    try { window.parent.postMessage('lmnRecorderDone','*'); } catch(e){}
+    try { window.close(); } catch(e){}
+  }
+  // ═══════════════════════════════════════════════════════════════
+  // SUPABASE CONFIG  (Step 3 — migrated from the Google Sheet)
+  // Same project URL + publishable key as the LMN Tree shell.
+  // The recorder now reads its phrase + model audio from the `cards`
+  // table, matched on recorder_slide === the ?slide=N passed by the shell.
+  // ═══════════════════════════════════════════════════════════════
+  const SUPABASE_URL = 'https://quymqrdoxmplpiwrptbb.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_mGAO-9c1PXZT9ltrVtHVLg_g4d_WgN4';
+
+  // ── Which `cards` columns to read ──
+  //  SLIDE_COL   = the key the shell passes in as ?slide=N  (confirmed: recorder_slide)
+  //  PHRASE_COL  = the sentence shown in the phrase box     (confirmed: phrase)
+  //  AUDIO_COL   = the model-audio URL column. If your column has a different
+  //                name, change it here. The loader also auto-detects the
+  //                common names below, so it will usually work either way.
+  //  DURATION_COL= optional; only used as a fallback timing hint.
+  const CARDS_TABLE   = 'cards';
+  const SLIDE_COL     = 'recorder_slide';
+  const PHRASE_COL    = 'phrase';
+  const AUDIO_COL     = 'model_audio_url';
+  const DURATION_COL  = 'duration';
+  const AUDIO_FALLBACKS = ['model_audio_url','audio_url','model_audio','tts_audio_url','tts_url','audio'];
+
+  // ── Model-voice fallback (auto-generate when the card has no stored audio) ──
+  // Same Google Cloud Function the shell uses for its translate-panel Listen.
+  // If a card has no stored model-audio URL, the recorder asks this function
+  // to SPEAK the phrase (in English) so there's always a voice, never a beep.
+  const FUNCTION_URL = 'https://us-central1-eco-groove-475802-i4.cloudfunctions.net/lmn-translate';
+  const MODEL_LANG   = 'en';   // language for the auto-generated model voice
+
+  // ── Supabase client (from the CDN <script> above) ──
+  let db = null;
+  try { const { createClient } = supabase; db = createClient(SUPABASE_URL, SUPABASE_KEY); }
+  catch(e){ console.error('Supabase init:', e); }
+
+  // ── Read slide number from URL parameter (?slide=N) ──
+  // SLIDE_RAW is what the shell actually put in the URL (recorder_slide,
+  // raw). We query on that so it matches whether recorder_slide is an
+  // integer (1, 2, 3) or a text code ("1.1"). SLIDE_NUM is just for
+  // display/fallback timing.
+  const params    = new URLSearchParams(window.location.search);
+  const SLIDE_RAW = (params.get('slide') || '1').trim();
+  const SLIDE_NUM = parseInt(SLIDE_RAW) || 1;
+
+  // These will be populated after the card loads
+  let AUDIO_URL    = null;
+  let MDL          = 4;
+  // ── Pre-load model audio element (set after card loads) ──
+  let modelAudioEl = null;
+  let mCtx=null, mIv=null;
+  let mediaRec=null, recChunks=[], recSecs=0, recIv=null;
+  let uBlob=null, uAudio=null, uBuf=null, comparing=false;
+  // ── Lead-in / live-meter config + state ──
+  // LEAD_IN_SECS: how many "get ready" counts (3 → shows 3,2,1 then GO).
+  //               Set to 0 to skip the countdown and go straight to the
+  //               green light + capture. STEP_MS controls the count pace.
+  const LEAD_IN_SECS = 3;
+  const STEP_MS      = 850;
+  let recPhase   = 'idle';   // idle | counting | recording
+  let liveStream = null;     // the live mic stream (held across countdown → capture)
+  let liveAC     = null, liveAnalyser = null, liveRAF = null;
+  let countdownTO = null;
+  const OV_BARS  = 40;       // number of live-waveform bars in the overlay
+  // ── Playback alignment tuning ──
+  // The recording carries a little leading silence (human reaction time + mic
+  // warm-up) and a WebM blob has first-play decode latency — together that made
+  // playback start ~½ s late so it never lined up with the model. We now detect
+  // and trim that silence and play the recording gaplessly from the decoded
+  // buffer (instant start, no decode delay).
+  //   ONSET_PREROLL_MS      : keep this much audio before the first sound so the
+  //                           opening consonant isn't clipped.
+  //   ONSET_THRESH_REL      : how loud (as a fraction of the clip's peak) counts
+  //                           as the start of speech. Raise if faint room noise
+  //                           is being mistaken for the start.
+  //   COMPARE_USER_DELAY_MS : nudge the voice later in Play Both if it starts a
+  //                           hair before the model (0 = start together).
+  const ONSET_PREROLL_MS      = 40;
+  const ONSET_THRESH_REL      = 0.12;
+  const ONSET_THRESH_MIN      = 0.008;
+  const COMPARE_USER_DELAY_MS = 0;
+  let uOnset = 0;                                   // detected start-of-speech (s)
+  let uSrc = null, uSrcCtx = null, uSrcStart = 0;   // active buffer-source playback
+  let sheetLoaded = false;
+  // ── Show a loading state while the card fetches ──
+  function setLoadingState() {
+    document.getElementById('rwModelBtn').disabled = true;
+    showSt('Loading slide…', 'info');
+  }
+  function setReadyState() {
+    document.getElementById('rwModelBtn').disabled = false;
+    hideSt();
+  }
+  function setErrorState(msg) {
+    showSt(msg || 'Could not load slide data.', 'rec');
+  }
+  // ── Pick first non-empty string field among candidate column names ──
+  function firstField(row, names) {
+    for (let i = 0; i < names.length; i++) {
+      const n = names[i];
+      if (n && row[n] != null && String(row[n]).trim() !== '') return String(row[n]).trim();
+    }
+    return null;
+  }
+  // ── Auto-generate a model voice from text via the Cloud Function ──
+  // Returns a ready <audio> element, or null if generation failed.
+  async function genVoice(text) {
+    if (!text) return null;
+    try {
+      const r = await fetch(FUNCTION_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'speak', text: text, lang: MODEL_LANG })
+      });
+      const d = await r.json();
+      if (d && d.audio) {
+        const a = new Audio('data:audio/mp3;base64,' + d.audio);
+        a.preload = 'auto';
+        return a;
+      }
+      console.warn('Cloud Function returned no audio for model voice.');
+    } catch(e) {
+      console.warn('Model voice generation failed:', e);
+    }
+    return null;
+  }
+  // ═══════════════════════════════════════════════════════════════
+  // LOAD CARD DATA FROM SUPABASE   (was: Google Sheet CSV)
+  // Finds the `cards` row where recorder_slide === SLIDE_NUM,
+  // then sets the phrase, AUDIO_URL and MDL ready for playback.
+  // ═══════════════════════════════════════════════════════════════
+  async function loadLesson() {
+    setLoadingState();
+    try {
+      if (!db) throw new Error('Supabase not initialised');
+      const { data, error } = await db
+        .from(CARDS_TABLE)
+        .select('*')
+        .eq(SLIDE_COL, SLIDE_RAW)
+        .limit(1);
+      if (error) throw error;
+      if (!data || !data.length) throw new Error('Slide ' + SLIDE_NUM + ' not found in cards');
+      const row = data[0];
+
+      // Phrase → display box
+      const phraseEl = document.getElementById('rwPhraseText');
+      const phrase   = firstField(row, [PHRASE_COL, 'phrase', 'text', 'en']);
+      if (phraseEl) {
+        phraseEl.textContent = phrase || '';
+        phraseEl.classList.remove('loading');
+      }
+
+      // Model audio URL — explicit column first, then common fallbacks
+      AUDIO_URL = firstField(row, [AUDIO_COL].concat(AUDIO_FALLBACKS));
+
+      // Duration (optional; real duration is read off the audio once it loads)
+      const durRaw = firstField(row, [DURATION_COL, 'duration', 'model_duration']);
+      MDL = durRaw ? (parseFloat(durRaw) || 4) : 4;
+
+      if (AUDIO_URL) {
+        // Preferred: play the stored (ElevenLabs) model-audio file
+        modelAudioEl = new Audio(AUDIO_URL);
+        modelAudioEl.crossOrigin = 'anonymous';
+        modelAudioEl.preload = 'auto';
+      } else {
+        // No stored audio on this card → auto-generate the model voice
+        // from the phrase via the Cloud Function (so there's never a beep).
+        console.warn('No stored model-audio URL on card for slide ' + SLIDE_NUM + '; auto-generating voice from phrase.');
+        showSt('Preparing model voice…', 'info');
+        modelAudioEl = await genVoice(phrase);
+        if (!modelAudioEl) {
+          console.warn('Auto-generation unavailable; falling back to synth tone.');
+        }
+      }
+
+      sheetLoaded = true;
+      setReadyState();
+    } catch(e) {
+      console.error('Card load error:', e);
+      const phraseElErr = document.getElementById('rwPhraseText');
+      if (phraseElErr) { phraseElErr.textContent = ''; phraseElErr.classList.remove('loading'); }
+      setErrorState('Could not load slide ' + SLIDE_NUM + '. Check the card / recorder_slide.');
+    }
+  }
+  // ── Waveform generators ──
+  function genWave(id, n, seed) {
+    const el = document.getElementById(id);
+    if (!el) return; el.innerHTML = '';
+    for (let i = 0; i < n; i++) {
+      const b = document.createElement('div');
+      b.className = 'rw-wave-bar';
+      const r = Math.abs(Math.sin(seed*.37 + i*.61 + Math.cos(i*.23)*2));
+      b.style.height = (12 + r*76) + '%';
+      el.appendChild(b);
+    }
+  }
+  function drawReal(id, buf, n, startSec) {
+    const el=document.getElementById(id); if(!el)return; el.innerHTML='';
+    const d=buf.getChannelData(0);
+    const start=Math.max(0, Math.floor((startSec||0)*buf.sampleRate));
+    const usable=Math.max(1, d.length-start);
+    const bs=Math.max(1, Math.floor(usable/n));
+    for(let i=0;i<n;i++){
+      let s=0; for(let j=0;j<bs;j++) s+=Math.abs(d[start+i*bs+j]||0);
+      const b=document.createElement('div'); b.className='rw-wave-bar';
+      b.style.height=Math.max(8,Math.min((s/bs)*380,100))+'%'; el.appendChild(b);
+    }
+  }
+  // ── Find where speech actually starts, so we can trim the leading silence ──
+  function findOnset(buf){
+    if(!buf) return 0;
+    const d=buf.getChannelData(0), sr=buf.sampleRate;
+    const win=Math.max(1,Math.floor(sr*0.01));      // 10 ms windows
+    let peak=0; const arr=[];
+    for(let i=0;i+win<=d.length;i+=win){
+      let s=0; for(let j=0;j<win;j++){const v=d[i+j];s+=v*v;}
+      const r=Math.sqrt(s/win); arr.push(r); if(r>peak) peak=r;
+    }
+    const thr=Math.max(ONSET_THRESH_MIN, peak*ONSET_THRESH_REL);
+    for(let k=0;k<arr.length;k++){
+      if(arr[k]>=thr) return Math.max(0,(k*win)/sr - ONSET_PREROLL_MS/1000);
+    }
+    return 0;
+  }
+  // ── Gapless playback straight from the decoded buffer, starting at the onset.
+  //    No <audio>-element decode delay, no leading silence.  ──
+  function playUserSrc(onEnd, delaySec){
+    stopUserSrc();
+    uSrcCtx=new AC();
+    if(uSrcCtx.state==='suspended') uSrcCtx.resume().catch(()=>{});
+    uSrc=uSrcCtx.createBufferSource();
+    uSrc.buffer=uBuf;
+    uSrc.connect(uSrcCtx.destination);
+    uSrc.onended=()=>{
+      uSrc=null;
+      if(uSrcCtx){ try{uSrcCtx.close();}catch(e){} uSrcCtx=null; }
+      if(onEnd) onEnd();
+    };
+    const when=uSrcCtx.currentTime + (delaySec||0);
+    uSrcStart=when;
+    uSrc.start(when, Math.max(0,uOnset));
+  }
+  function stopUserSrc(){
+    if(uSrc){ try{uSrc.onended=null; uSrc.stop();}catch(e){} uSrc=null; }
+    if(uSrcCtx){ try{uSrcCtx.close();}catch(e){} uSrcCtx=null; }
+  }
+  genWave('rwModelWave', 50, 42);
+  // ── Fallback synth tone (used only if audio URL fails to load) ──
+  function makeModelTone(ctx) {
+    const sr=ctx.sampleRate, len=sr*MDL, buf=ctx.createBuffer(1,len,sr), d=buf.getChannelData(0);
+    const f=[200,240,180,220,260,200,170,210];
+    for (let i=0;i<len;i++) {
+      const t=i/sr, s=Math.floor((t/MDL)*f.length), fr=f[Math.min(s,f.length-1)];
+      const env=Math.min(t*10,1)*Math.min((MDL-t)*10,1), p=(t>1.8&&t<2.1)?0:1;
+      d[i]=env*p*.25*(Math.sin(2*Math.PI*fr*t)*.7+Math.sin(2*Math.PI*fr*1.5*t)*.3);
+    }
+    return buf;
+  }
+  // ── Status bar ──
+  function showSt(msg, type, time) {
+    const s=document.getElementById('rwStatus'), ic=document.getElementById('rwStatusIcon');
+    s.className='rw-status show '+type;
+    document.getElementById('rwStatusText').textContent=msg;
+    document.getElementById('rwStatusTime').textContent=time||'';
+    ic.className=type==='rec'?'ti ti-microphone':type==='ok'?'ti ti-check':'ti ti-player-play';
+  }
+  function hideSt() { document.getElementById('rwStatus').className='rw-status'; }
+  // ═══════════════════════════════════════════════════════════════
+  // MODEL PLAYBACK
+  // Uses the real audio file loaded from Supabase.
+  // Falls back to synth tone if the card has no audio yet.
+  // ═══════════════════════════════════════════════════════════════
+  document.getElementById('rwModelBtn').addEventListener('click', () => {
+    if (comparing) return;
+    if (modelAudioEl) {
+      if (!modelAudioEl.paused) {
+        modelAudioEl.pause(); modelAudioEl.currentTime=0;
+        clearInterval(mIv);
+        document.getElementById('rwModelHead').style.width='0%';
+        document.getElementById('rwModelIcon').className='ti ti-player-play';
+        hideSt(); return;
+      }
+      modelAudioEl.currentTime=0;
+      modelAudioEl.play().catch(()=> showSt('Audio failed to play. Check the model_audio URL on this card.','rec'));
+      document.getElementById('rwModelIcon').className='ti ti-player-pause';
+      showSt('Playing model…','info');
+      mIv=setInterval(()=>{
+        if(!modelAudioEl||modelAudioEl.paused){clearInterval(mIv);return;}
+        const dur = modelAudioEl.duration || MDL;
+        const p=Math.min((modelAudioEl.currentTime/dur)*100,100);
+        document.getElementById('rwModelHead').style.width=p+'%';
+        if(p>=100){clearInterval(mIv);document.getElementById('rwModelHead').style.width='0%';document.getElementById('rwModelIcon').className='ti ti-player-play';hideSt();}
+      },50);
+      modelAudioEl.onended=()=>{
+        clearInterval(mIv);
+        document.getElementById('rwModelHead').style.width='0%';
+        document.getElementById('rwModelIcon').className='ti ti-player-play';
+        hideSt();
+      };
+    } else {
+      // Synth fallback
+      if (mCtx) {
+        mCtx.close(); mCtx=null; clearInterval(mIv);
+        document.getElementById('rwModelHead').style.width='0%';
+        document.getElementById('rwModelIcon').className='ti ti-player-play';
+        hideSt(); return;
+      }
+      mCtx=new AC();
+      const buf=makeModelTone(mCtx), src=mCtx.createBufferSource();
+      src.buffer=buf; src.connect(mCtx.destination); src.start();
+      const t0=mCtx.currentTime;
+      document.getElementById('rwModelIcon').className='ti ti-player-pause';
+      showSt('Playing model…','info');
+      mIv=setInterval(()=>{
+        if(!mCtx){clearInterval(mIv);return;}
+        const p=Math.min(((mCtx.currentTime-t0)/MDL)*100,100);
+        document.getElementById('rwModelHead').style.width=p+'%';
+        if(p>=100){clearInterval(mIv);document.getElementById('rwModelHead').style.width='0%';document.getElementById('rwModelIcon').className='ti ti-player-play';mCtx.close();mCtx=null;hideSt();}
+      },50);
+    }
+  });
+  // ═══════════════════════════════════════════════════════════════
+  // RECORDING
+  // ═══════════════════════════════════════════════════════════════
+  // ── Overlay helpers ──
+  function buildOvBars(){
+    const w=document.getElementById('rwOvWave');
+    if(w.childElementCount) return;
+    for(let i=0;i<OV_BARS;i++){const b=document.createElement('div');b.className='rw-ov-bar';w.appendChild(b);}
+  }
+  function hideOverlay(){ document.getElementById('rwOverlay').className='rw-overlay'; }
+  function setOverlayReady(n){
+    document.getElementById('rwOverlay').className='rw-overlay show ready';
+    document.getElementById('rwOvLabel').textContent='Get ready…';
+    document.getElementById('rwOvCount').textContent=n;
+    document.getElementById('rwOvHint').textContent='Wait for the green light, then speak.';
+    document.getElementById('rwOvBtn').innerHTML='<i class="ti ti-x"></i><span>Cancel</span>';
+  }
+  function setOverlayRecording(){
+    document.getElementById('rwOverlay').className='rw-overlay show recording';
+    document.getElementById('rwOvLabel').textContent='Speak now';
+    document.getElementById('rwOvHint').textContent="I'm listening — say the phrase.";
+    document.getElementById('rwOvTimer').textContent='0:00';
+    document.getElementById('rwOvBtn').innerHTML='<i class="ti ti-player-stop"></i><span>Stop &amp; save</span>';
+  }
+  // ── Live mic meter (drives the overlay waveform) ──
+  function startLiveMeter(stream){
+    try{
+      liveAC=new AC();
+      if(liveAC.state==='suspended') liveAC.resume().catch(()=>{});
+      const src=liveAC.createMediaStreamSource(stream);
+      liveAnalyser=liveAC.createAnalyser();
+      liveAnalyser.fftSize=128;
+      liveAnalyser.smoothingTimeConstant=0.75;
+      src.connect(liveAnalyser);            // NOT connected to destination → no echo/feedback
+      const bins=liveAnalyser.frequencyBinCount;
+      const data=new Uint8Array(bins);
+      const bars=document.querySelectorAll('#rwOvWave .rw-ov-bar');
+      const loop=()=>{
+        if(!liveAnalyser) return;
+        liveAnalyser.getByteFrequencyData(data);
+        for(let i=0;i<bars.length;i++){
+          const v=data[Math.floor(i/bars.length*bins)]/255;
+          bars[i].style.height=(6+v*94)+'%';
+        }
+        liveRAF=requestAnimationFrame(loop);
+      };
+      loop();
+    }catch(e){ console.warn('Live meter unavailable:',e); }
+  }
+  function stopLiveMeter(){
+    if(liveRAF){cancelAnimationFrame(liveRAF);liveRAF=null;}
+    liveAnalyser=null;
+    if(liveAC){liveAC.close().catch(()=>{});liveAC=null;}
+    document.querySelectorAll('#rwOvWave .rw-ov-bar').forEach(b=>b.style.height='8%');
+  }
+  // ── Lead-in sequence: get-ready countdown → GREEN light → capture ──
+  function runLeadIn(stream){
+    recPhase='counting';
+    buildOvBars();
+    startLiveMeter(stream);                 // wave reacts (grey) so the mic is visibly live
+    if(LEAD_IN_SECS<=0){ beginCapture(stream); return; }
+    let n=LEAD_IN_SECS;
+    setOverlayReady(n);
+    const tick=()=>{
+      n--;
+      if(n>0){ document.getElementById('rwOvCount').textContent=n; countdownTO=setTimeout(tick,STEP_MS); }
+      else   { beginCapture(stream); }
+    };
+    countdownTO=setTimeout(tick,STEP_MS);
+  }
+  function beginCapture(stream){
+    recPhase='recording';
+    setOverlayRecording();                  // light flips GREEN at the exact capture instant
+    startRec(stream);
+  }
+  function abortLeadIn(){
+    if(countdownTO){clearTimeout(countdownTO);countdownTO=null;}
+    stopLiveMeter();
+    if(liveStream){liveStream.getTracks().forEach(t=>t.stop());liveStream=null;}
+    hideOverlay();
+    recPhase='idle';
+    document.getElementById('rwRecBtn').className='rw-rec-btn';
+    document.getElementById('rwRecLbl').textContent='Record';
+    hideSt();
+  }
+  // Overlay button = Cancel (while counting) or Stop & save (while recording)
+  document.getElementById('rwOvBtn').addEventListener('click',()=>{
+    if(recPhase==='counting'){ abortLeadIn(); return; }
+    if(recPhase==='recording' && mediaRec && mediaRec.state==='recording'){ mediaRec.stop(); }
+  });
+  // ── Record button = entry point / mirror of overlay controls ──
+  document.getElementById('rwRecBtn').addEventListener('click', async () => {
+    if (recPhase==='recording'){ if(mediaRec&&mediaRec.state==='recording') mediaRec.stop(); return; }
+    if (recPhase==='counting'){ abortLeadIn(); return; }
+    try {
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      liveStream=stream;
+      runLeadIn(stream);
+    } catch(e) { showSt('Microphone access denied.','rec'); }
+  });
+  function startRec(stream) {
+    recChunks=[]; recSecs=0;
+    mediaRec=new MediaRecorder(stream);
+    mediaRec.ondataavailable=e=>{if(e.data.size>0)recChunks.push(e.data);};
+    mediaRec.onstop=async()=>{
+      stream.getTracks().forEach(t=>t.stop());
+      stopLiveMeter(); hideOverlay(); recPhase='idle'; liveStream=null;
+      uBlob=new Blob(recChunks,{type:'audio/webm'});
+      uAudio=new Audio(URL.createObjectURL(uBlob));
+      const ab=await uBlob.arrayBuffer(), tmp=new AC();
+      try{uBuf=await tmp.decodeAudioData(ab);}catch(e){uBuf=null;}
+      await tmp.close();
+      uOnset = uBuf ? findOnset(uBuf) : 0;
+      console.log('[recorder] detected leading silence trimmed:', uOnset.toFixed(3), 's');
+      const wrap=document.getElementById('rwUserWaveWrap');
+      wrap.innerHTML='<div class="rw-wave" id="rwUserWave"></div><div class="rw-playhead" id="rwUserHead"></div>';
+      if(uBuf) drawReal('rwUserWave',uBuf,50,uOnset); else genWave('rwUserWave',50,99);
+      document.getElementById('rwUserTrack').className='rw-track yousay';
+      document.getElementById('rwUserBtn').disabled=false;
+      document.getElementById('rwUserBtn').style.background='#1565c0';
+      document.getElementById('rwAnalyzeBtn').disabled=false;
+      document.getElementById('rwDelBtn').disabled=false;
+      document.getElementById('rwRecBtn').className='rw-rec-btn';
+      document.getElementById('rwRecLbl').textContent='Record again';
+      clearInterval(recIv); recSecs=0;
+      showSt('Saved! Hit Play Both / Check.','ok');
+    };
+    mediaRec.start();
+    document.getElementById('rwRecBtn').className='rw-rec-btn recording';
+    document.getElementById('rwRecLbl').textContent='Stop';
+    document.getElementById('rwAnalyzeBtn').disabled=true;
+    document.getElementById('rwDelBtn').disabled=true;
+    document.getElementById('rwScore').className='rw-score';
+    showSt('Recording…','rec');
+    recIv=setInterval(()=>{recSecs++;const t='0:'+String(recSecs).padStart(2,'0');document.getElementById('rwStatusTime').textContent=t;const ovt=document.getElementById('rwOvTimer');if(ovt)ovt.textContent=t;},1000);
+  }
+  // ── User audio playback ──
+  document.getElementById('rwUserBtn').addEventListener('click', () => {
+    if (comparing) return;
+    const h=document.getElementById('rwUserHead'), ic=document.getElementById('rwUserIcon');
+    // Already playing → stop.
+    if (uSrc || (uAudio && !uAudio.paused)) {
+      stopUserSrc();
+      if(uAudio){uAudio.pause();uAudio.currentTime=0;}
+      ic.className='ti ti-player-play'; if(h)h.style.width='0%'; hideSt(); return;
+    }
+    if (uBuf) {
+      // Gapless, instant, onset-trimmed playback from the decoded buffer.
+      const dur=Math.max(0.05, uBuf.duration - Math.max(0,uOnset));
+      playUserSrc(()=>{ ic.className='ti ti-player-play'; if(h)h.style.width='0%'; clearInterval(iv); hideSt(); }, 0);
+      ic.className='ti ti-player-pause'; showSt('Playing your recording…','info');
+      const iv=setInterval(()=>{
+        if(!uSrc||!uSrcCtx){clearInterval(iv);return;}
+        if(h)h.style.width=Math.min(Math.max(0,uSrcCtx.currentTime-uSrcStart)/dur,1)*100+'%';
+      },50);
+      return;
+    }
+    // Fallback: element playback (only if the buffer failed to decode).
+    if (!uAudio) return;
+    uAudio.currentTime=Math.max(0,uOnset); uAudio.play().catch(()=>{});
+    ic.className='ti ti-player-pause'; showSt('Playing your recording…','info');
+    const iv=setInterval(()=>{if(!uAudio||uAudio.paused){clearInterval(iv);return;}if(h)h.style.width=(uAudio.currentTime/(uAudio.duration||1))*100+'%';},50);
+    uAudio.onended=()=>{ic.className='ti ti-player-play';if(h)h.style.width='0%';clearInterval(iv);hideSt();};
+  });
+  // ═══════════════════════════════════════════════════════════════
+  // PLAY BOTH / CHECK
+  // ═══════════════════════════════════════════════════════════════
+  document.getElementById('rwAnalyzeBtn').addEventListener('click', () => {
+    if (comparing){stopCmp();return;} startCmp();
+  });
+  function getModelDuration() {
+    return (modelAudioEl && modelAudioEl.duration && !isNaN(modelAudioEl.duration))
+      ? modelAudioEl.duration : MDL;
+  }
+  function startCmp() {
+    if (!uBuf && !uAudio) return;
+    comparing=true;
+    document.getElementById('rwScore').className='rw-score';
+    document.getElementById('rwAnalyzeBtn').className='rw-analyze-btn playing';
+    document.getElementById('rwAnalyzeBtn').innerHTML='<i class="ti ti-player-pause" style="font-size:18px"></i> <span>Stop</span>';
+    showSt('Playing both together…','info');
+    const h=document.getElementById('rwUserHead');
+    document.getElementById('rwModelIcon').className='ti ti-player-pause';
+    document.getElementById('rwUserIcon').className='ti ti-player-pause';
+    // Start the MODEL
+    if (modelAudioEl) {
+      try{modelAudioEl.currentTime=0;}catch(e){}
+      modelAudioEl.play().catch(()=>{});
+    } else {
+      mCtx=new AC(); const buf=makeModelTone(mCtx), src=mCtx.createBufferSource();
+      src.buffer=buf; src.connect(mCtx.destination); src.start();
+    }
+    // Start the USER voice — gapless + onset-trimmed so it lines up with the model
+    const onUserEnd=()=>{ if(comparing){ if(modelAudioEl){modelAudioEl.pause();modelAudioEl.currentTime=0;} finishCmp(); } };
+    let userDur;
+    if (uBuf) {
+      userDur=Math.max(0.05, uBuf.duration - Math.max(0,uOnset));
+      playUserSrc(onUserEnd, COMPARE_USER_DELAY_MS/1000);
+    } else {
+      uAudio.currentTime=Math.max(0,uOnset); uAudio.play().catch(()=>{});
+      userDur=Math.max(0.05,(uAudio.duration||1)-Math.max(0,uOnset));
+      uAudio.onended=onUserEnd;
+    }
+    const startWall=Date.now();
+    const iv=setInterval(()=>{
+      if(!comparing){clearInterval(iv);return;}
+      const dur=getModelDuration();
+      let elapsed;
+      if(uBuf && uSrcCtx) elapsed=Math.max(0, uSrcCtx.currentTime - uSrcStart);
+      else if(uBuf)       elapsed=(Date.now()-startWall)/1000;
+      else                elapsed=uAudio?Math.max(0,uAudio.currentTime-Math.max(0,uOnset)):0;
+      document.getElementById('rwModelHead').style.width=Math.min((elapsed/dur)*100,100)+'%';
+      if(h) h.style.width=Math.min(elapsed/userDur,1)*100+'%';
+    },50);
+  }
+  function finishCmp() {
+    comparing=false; if(mCtx){mCtx.close();mCtx=null;}
+    document.getElementById('rwModelHead').style.width='0%';
+    const h=document.getElementById('rwUserHead'); if(h) h.style.width='0%';
+    document.getElementById('rwModelIcon').className='ti ti-player-play';
+    document.getElementById('rwUserIcon').className='ti ti-player-play';
+    document.getElementById('rwAnalyzeBtn').className='rw-analyze-btn';
+    document.getElementById('rwAnalyzeBtn').innerHTML='<i class="ti ti-chart-bar" style="font-size:18px"></i> <span>Play Both / Check</span>';
+    hideSt();
+    document.getElementById('rwSpinner').className='rw-spinner show';
+    setTimeout(()=>{document.getElementById('rwSpinner').className='rw-spinner'; doScore();},1800);
+  }
+  function stopCmp() {
+    comparing=false; if(mCtx){mCtx.close();mCtx=null;}
+    if(modelAudioEl){modelAudioEl.pause();modelAudioEl.currentTime=0;}
+    stopUserSrc();
+    if(uAudio){uAudio.pause();uAudio.currentTime=0;}
+    document.getElementById('rwModelHead').style.width='0%';
+    const h=document.getElementById('rwUserHead'); if(h) h.style.width='0%';
+    document.getElementById('rwModelIcon').className='ti ti-player-play';
+    document.getElementById('rwUserIcon').className='ti ti-player-play';
+    document.getElementById('rwAnalyzeBtn').className='rw-analyze-btn';
+    document.getElementById('rwAnalyzeBtn').innerHTML='<i class="ti ti-chart-bar" style="font-size:18px"></i> <span>Play Both / Check</span>';
+    hideSt();
+  }
+  // ═══════════════════════════════════════════════════════════════
+  // SCORING
+  // ═══════════════════════════════════════════════════════════════
+  function rms(buf,n){const d=buf.getChannelData(0),bs=Math.floor(d.length/n),o=[];for(let i=0;i<n;i++){let s=0;for(let j=0;j<bs;j++){const v=d[i*bs+j]||0;s+=v*v;}o.push(Math.sqrt(s/bs));}return o;}
+  function cos(a,b){const n=Math.min(a.length,b.length);let dot=0,ma=0,mb=0;for(let i=0;i<n;i++){dot+=a[i]*b[i];ma+=a[i]*a[i];mb+=b[i]*b[i];}return(ma&&mb)?dot/(Math.sqrt(ma)*Math.sqrt(mb)):0;}
+  // ═══════════════════════════════════════════════════════════════
+  // LENIENCY KNOBS — raise these to be even more forgiving
+  //   SCORE_FLOOR : lowest score a genuine attempt can ever get (0-100).
+  //                 Bump toward 70 to be gentler; drop toward 40 to be stricter.
+  //   SCORE_GAMMA : <1 lifts low scores upward (0.5 ≈ square-root curve;
+  //                 0.4 = even more generous; 1.0 = no lift).
+  //   PASS_AT     : overall ≥ this shows "Great job!"
+  //   OKAY_AT     : overall ≥ this shows "Getting there!" (below = "Keep practicing")
+  // ═══════════════════════════════════════════════════════════════
+  const SCORE_FLOOR = 45;   // raise toward 60 to make it even more forgiving
+  const SCORE_GAMMA = 0.6;
+  const PASS_AT     = 70;
+  const OKAY_AT     = 50;
+  // Weight the real "did they try" signals (timing, energy) above the
+  // rhythm-vs-tone comparison, which is the noisiest metric.
+  const W_RHYTHM = 0.25, W_TIMING = 0.40, W_ENERGY = 0.35;
+  // Lift a raw 0-100 metric into a gentler, floored range.
+  function lift(v) {
+    v = Math.max(0, Math.min(v, 100));
+    const curved = 100 * Math.pow(v / 100, SCORE_GAMMA);
+    return Math.round(SCORE_FLOOR + curved * (100 - SCORE_FLOOR) / 100);
+  }
+  function doScore() {
+    const dur = getModelDuration();
+    let rh, ti, en, ov;
+    if (uBuf) {
+      const tmp = new AC(), mb = makeModelTone(tmp); tmp.close();
+      const mr = rms(mb, 20), ur = rms(uBuf, 20);
+      // raw metrics (0-100)
+      const rhRaw = cos(mr, ur) * 100;
+      const tiRaw = (1 - Math.abs(1 - uBuf.duration / dur)) * 100;
+      const me = mr.reduce((a,b)=>a+b,0)/mr.length, ue = ur.reduce((a,b)=>a+b,0)/ur.length;
+      const enRaw = (Math.min(me, ue) / Math.max(me, ue)) * 100;
+      // lifted, forgiving metrics
+      rh = lift(rhRaw); ti = lift(tiRaw); en = lift(enRaw);
+      ov = Math.round(rh * W_RHYTHM + ti * W_TIMING + en * W_ENERGY);
+    } else {
+      rh = 80; ti = 82; en = 84; ov = 82;
+    }
+    showScore(ov, rh, ti, en);
+  }
+  function showScore(ov,rh,ti,en) {
+    const p=document.getElementById('rwScore'),ic=document.getElementById('rwScoreIco');
+    let cls;
+    if(ov>=PASS_AT){cls='rw-score show pass';ic.textContent='✓';document.getElementById('rwVerdict').textContent='Great job!';document.getElementById('rwDetail').textContent='Nice clear attempt — that sounds great.';}
+    else if(ov>=OKAY_AT){cls='rw-score show okay';ic.textContent='◎';document.getElementById('rwVerdict').textContent='Nice try!';document.getElementById('rwDetail').textContent='Good effort — listen once more and say it again.';}
+    else{cls='rw-score show fail';ic.textContent='◎';document.getElementById('rwVerdict').textContent='Good start!';document.getElementById('rwDetail').textContent='Give it another go — you can do it.';}
+    p.className=cls; document.getElementById('rwScoreNum').textContent=ov+'%';
+    setTimeout(()=>{
+      document.getElementById('rwRhythm').style.width=rh+'%'; document.getElementById('rwRhythmP').textContent=rh+'%';
+      document.getElementById('rwTiming').style.width=ti+'%'; document.getElementById('rwTimingP').textContent=ti+'%';
+      document.getElementById('rwEnergy').style.width=en+'%'; document.getElementById('rwEnergyP').textContent=en+'%';
+    },100);
+  }
+  // ── Delete / reset ──
+  document.getElementById('rwDelBtn').addEventListener('click', () => {
+    stopUserSrc();
+    if(uAudio){uAudio.pause();uAudio=null;} uBlob=null; uBuf=null; uOnset=0;
+    document.getElementById('rwUserTrack').className='rw-track yousay empty';
+    document.getElementById('rwUserWaveWrap').innerHTML='<div style="display:flex;align-items:center;height:100%;"><div class="rw-dashed"></div></div>';
+    document.getElementById('rwUserBtn').disabled=true; document.getElementById('rwUserBtn').style.background='#c5d8f5';
+    document.getElementById('rwAnalyzeBtn').disabled=true; document.getElementById('rwDelBtn').disabled=true;
+    document.getElementById('rwRecBtn').className='rw-rec-btn'; document.getElementById('rwRecLbl').textContent='Record';
+    document.getElementById('rwScore').className='rw-score'; document.getElementById('rwSpinner').className='rw-spinner';
+    hideSt();
+  });
+  // ── Kick everything off ──
+  loadLesson();
+</script>
+</body>
+</html>
