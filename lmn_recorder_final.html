@@ -503,7 +503,7 @@ body.rcal .rskin-zone { outline:2px dashed #e53935; background:rgba(229,57,53,.2
 #rwUserWaveWrap  { position:fixed; z-index:32; left:65%; top:34%; width:32%; height:14%; overflow:hidden; }
 #rwModelWaveWrap .rw-wave, #rwUserWaveWrap .rw-wave { justify-content:center; height:100%; }
 #rwModelWaveWrap .rw-wave-bar, #rwUserWaveWrap .rw-wave-bar { flex:1 1 0; width:auto; min-width:1px; max-width:4px; }
-#rskinCompare { position:fixed; z-index:32; left:3%; top:58%; width:94%; height:13%; overflow:hidden; }
+#rskinCompare { position:fixed; z-index:32; left:3%; top:57%; width:44%; height:13%; overflow:hidden; }
 .cmp-layer { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:2px; height:100%; }
 #cmpModel .rw-wave-bar { flex:1 1 0; width:auto; min-width:1px; max-width:4px; background:#1565c0; opacity:.5; }
 #cmpUser  .rw-wave-bar { flex:1 1 0; width:auto; min-width:1px; max-width:4px; background:#e53935; opacity:.5; }
@@ -511,15 +511,22 @@ body.rcal #rwModelWaveWrap, body.rcal #rwUserWaveWrap { outline:2px dashed #16a3
 body.rcal #rskinCompare { outline:2px dashed #7c3aed; }
 
 
-/* ===== LMN RESKIN — score percentage badge ===== */
-#rwScore { position:fixed; z-index:34; left:83%; top:7%; width:12.5%; height:14%; margin:0; padding:0; border:none; border-radius:12px; background:rgba(255,255,255,.94); box-shadow:0 3px 12px rgba(0,0,0,.30); }
-#rwScore.show { display:flex; align-items:center; justify-content:center; }
-#rwScore .rw-score-bars, #rwScoreIco, #rwVerdict, #rwDetail { display:none !important; }
-#rwScore .rw-score-top { display:flex; align-items:center; justify-content:center; margin:0; padding:0; gap:0; }
-#rwScoreNum { font-family:'Lexend',sans-serif; font-weight:800; font-size:min(5.5vw,36px); color:#1e3a6e; line-height:1; }
-#rwScore.pass #rwScoreNum { color:#17a06a; }
-#rwScore.okay #rwScoreNum { color:#e08a00; }
-#rwScore.fail #rwScoreNum { color:#c0392b; }
+/* ===== LMN RESKIN — grading panel (row 3, right) ===== */
+#rwScore { position:fixed; z-index:34; left:49%; top:52%; width:49%; height:22%; margin:0; padding:0.7% 1.4%; border:1px solid #dde6f5; border-radius:12px; background:rgba(255,255,255,.96); box-shadow:0 3px 12px rgba(0,0,0,.28); overflow:hidden; box-sizing:border-box; }
+#rwScore.show { display:flex; flex-direction:column; justify-content:center; gap:4px; }
+#rwScoreIco, #rwDetail { display:none !important; }
+#rwScore .rw-score-top { display:flex; align-items:center; justify-content:space-between; margin:0; padding:0; gap:8px; }
+#rwVerdict { font-family:'Lexend',sans-serif; font-weight:700; font-size:min(2.6vw,18px); color:#1e3a6e; }
+#rwScoreNum { font-family:'Lexend',sans-serif; font-weight:800; font-size:min(4.2vw,30px); line-height:1; color:#1e3a6e; }
+#rwScore.pass #rwScoreNum, #rwScore.pass #rwVerdict { color:#17a06a; }
+#rwScore.okay #rwScoreNum, #rwScore.okay #rwVerdict { color:#e08a00; }
+#rwScore.fail #rwScoreNum, #rwScore.fail #rwVerdict { color:#c0392b; }
+#rwScore .rw-score-bars { display:flex; flex-direction:column; gap:3px; margin:0; }
+#rwScore .rw-met { display:flex; align-items:center; gap:6px; margin:0; }
+#rwScore .rw-met-l { font-size:min(1.9vw,12px); width:44px; color:#5a6b85; font-weight:600; flex-shrink:0; }
+#rwScore .rw-bar-bg { flex:1; height:6px; background:#e6ecf5; border-radius:4px; overflow:hidden; }
+#rwScore .rw-bar-f { height:100%; background:#2f6fed; border-radius:4px; }
+#rwScore .rw-met-p { font-size:min(1.8vw,11px); width:30px; text-align:right; color:#5a6b85; font-weight:700; flex-shrink:0; }
 </style>
 </head>
 <body>
@@ -1318,7 +1325,7 @@ body.rcal #rskinCompare { outline:2px dashed #7c3aed; }
 <button class="rskin-zone" style="left:8%;top:33%;width:7%;height:18%;"     onclick="document.getElementById('rwModelBtn').click()"  aria-label="Play model"></button>
 <button class="rskin-zone" style="left:55.5%;top:33%;width:5%;height:18%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Record"></button>
 <button class="rskin-zone" style="left:60%;top:33%;width:5%;height:18%;"    onclick="document.getElementById('rwUserBtn').click()"   aria-label="Play your recording"></button>
-<button class="rskin-zone" style="left:2%;top:57%;width:96%;height:15%;z-index:33;"      onclick="document.getElementById('rwAnalyzeBtn').click()" aria-label="Play both / check"></button>
+<button class="rskin-zone" style="left:2%;top:56%;width:46%;height:15%;z-index:33;"      onclick="document.getElementById('rwAnalyzeBtn').click()" aria-label="Play both / check"></button>
 <button class="rskin-zone" style="left:12%;top:76%;width:12%;height:20%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Re-record"></button>
 <button class="rskin-zone" style="left:44%;top:76%;width:12%;height:20%;"     onclick="document.getElementById('rwDelBtn').click()"    aria-label="Delete"></button>
 <button class="rskin-zone" style="left:76%;top:76%;width:12%;height:20%;"     onclick="lmnFinish()"                                    aria-label="Finished"></button>
