@@ -510,6 +510,16 @@ body.rcal .rskin-zone { outline:2px dashed #e53935; background:rgba(229,57,53,.2
 body.rcal #rwModelWaveWrap, body.rcal #rwUserWaveWrap { outline:2px dashed #16a34a; }
 body.rcal #rskinCompare { outline:2px dashed #7c3aed; }
 
+
+/* ===== LMN RESKIN — score percentage badge ===== */
+#rwScore { position:fixed; z-index:34; left:83%; top:7%; width:12.5%; height:14%; margin:0; padding:0; border:none; border-radius:12px; background:rgba(255,255,255,.94); box-shadow:0 3px 12px rgba(0,0,0,.30); }
+#rwScore.show { display:flex; align-items:center; justify-content:center; }
+#rwScore .rw-score-bars, #rwScoreIco, #rwVerdict, #rwDetail { display:none !important; }
+#rwScore .rw-score-top { display:flex; align-items:center; justify-content:center; margin:0; padding:0; gap:0; }
+#rwScoreNum { font-family:'Lexend',sans-serif; font-weight:800; font-size:min(5.5vw,36px); color:#1e3a6e; line-height:1; }
+#rwScore.pass #rwScoreNum { color:#17a06a; }
+#rwScore.okay #rwScoreNum { color:#e08a00; }
+#rwScore.fail #rwScoreNum { color:#c0392b; }
 </style>
 </head>
 <body>
