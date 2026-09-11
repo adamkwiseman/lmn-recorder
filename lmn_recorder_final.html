@@ -492,23 +492,30 @@
   .rw-ov-btn i { font-size: 18px; }
 
 /* ===== LMN RESKIN (Stage 2) — art skin + control zones ===== */
-#rskin { position:fixed; inset:0; z-index:30; background:url('https://res.cloudinary.com/dvokel99y/image/upload/v1789094135/Listen_and_practice_button_ufjgpa.png') center/100% 100% no-repeat; }
+#rskin { position:fixed; inset:0; z-index:30; background:url('https://res.cloudinary.com/dvokel99y/image/upload/v1789099433/Listen_and_practice_button_ufjgpa.png') center/100% 100% no-repeat; }
 .rskin-zone { position:fixed; z-index:31; background:transparent; border:none; padding:0; margin:0; cursor:pointer; }
 #rwPhraseText { position:fixed; z-index:32; left:20%; top:5%; width:54%; height:24%; display:flex; align-items:center; justify-content:center; text-align:center; color:#1e3a6e; font-family:'Lexend',sans-serif; font-weight:700; font-size:min(4.4vw,30px); line-height:1.15; margin:0; padding:0 1%; background:transparent; border:none; min-height:0; }
 body.rcal .rskin-zone { outline:2px dashed #e53935; background:rgba(229,57,53,.20); }
 #rskinCal { position:fixed; top:6px; left:6px; z-index:60; font:12px/1 sans-serif; background:#14181f; color:#fff; border:none; border-radius:7px; padding:5px 9px; cursor:pointer; opacity:.85; }
 
 /* ===== LMN RESKIN (Stage 3 + compare) ===== */
-#rwModelWaveWrap { position:fixed; z-index:32; left:26%; top:42%; width:21%; height:16%; overflow:hidden; }
-#rwUserWaveWrap  { position:fixed; z-index:32; left:80%; top:42%; width:13.5%; height:16%; overflow:hidden; }
+#rwModelWaveWrap { position:fixed; z-index:32; left:26%; top:36%; width:22%; height:17%; overflow:hidden; }
+#rwUserWaveWrap  { position:fixed; z-index:32; left:78%; top:36%; width:17%; height:17%; overflow:hidden; }
 #rwModelWaveWrap .rw-wave, #rwUserWaveWrap .rw-wave { justify-content:center; height:100%; }
 #rwModelWaveWrap .rw-wave-bar, #rwUserWaveWrap .rw-wave-bar { flex:1 1 0; width:auto; min-width:1px; max-width:4px; }
-#rskinCompare { position:fixed; z-index:32; left:17%; top:68%; width:81%; height:13%; overflow:hidden; }
+#rskinCompare { position:fixed; z-index:32; left:9%; top:62%; width:89%; height:15%; overflow:hidden; }
 .cmp-layer { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:2px; height:100%; }
 #cmpModel .rw-wave-bar { flex:1 1 0; width:auto; min-width:1px; max-width:4px; background:#1565c0; opacity:.5; }
 #cmpUser  .rw-wave-bar { flex:1 1 0; width:auto; min-width:1px; max-width:4px; background:#e53935; opacity:.5; }
 body.rcal #rwModelWaveWrap, body.rcal #rwUserWaveWrap { outline:2px dashed #16a34a; }
 body.rcal #rskinCompare { outline:2px dashed #7c3aed; }
+
+/* ===== LMN RESKIN — line waveforms + side-by-side compare ===== */
+#rwModelWaveWrap .rw-wave-bar, #rwUserWaveWrap .rw-wave-bar { display:none !important; }
+.ln-svg { position:absolute; inset:0; width:100%; height:100%; display:block; overflow:visible; }
+.ln-blue { color:#1565c0; } .ln-red { color:#e53935; }
+#rskinCompare { display:flex; gap:3%; align-items:center; }
+#cmpModel, #cmpUser { position:relative; inset:auto; flex:1 1 50%; width:auto; height:100%; display:block; background:transparent; }
 </style>
 </head>
 <body>
@@ -1304,22 +1311,64 @@ body.rcal #rskinCompare { outline:2px dashed #7c3aed; }
 
 <!-- ===== LMN RESKIN (Stage 2) overlay ===== -->
 <div id="rskin"></div>
-<button class="rskin-zone" style="left:57%;top:6%;width:9%;height:22%;"      onclick="document.getElementById('rwModelBtn').click()"  aria-label="Hear word"></button>
-<button class="rskin-zone" style="left:16%;top:38%;width:11%;height:28%;"     onclick="document.getElementById('rwModelBtn').click()"  aria-label="Play model"></button>
-<button class="rskin-zone" style="left:65%;top:38%;width:7%;height:28%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Record"></button>
-<button class="rskin-zone" style="left:72.5%;top:38%;width:7%;height:28%;"    onclick="document.getElementById('rwUserBtn').click()"   aria-label="Play your recording"></button>
-<button class="rskin-zone" style="left:2%;top:68%;width:13%;height:14%;"      onclick="document.getElementById('rwAnalyzeBtn').click()" aria-label="Play both / check"></button>
-<button class="rskin-zone" style="left:2%;top:84%;width:31%;height:15%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Re-record"></button>
-<button class="rskin-zone" style="left:35%;top:84%;width:30%;height:15%;"     onclick="document.getElementById('rwDelBtn').click()"    aria-label="Delete"></button>
-<button class="rskin-zone" style="left:67%;top:84%;width:31%;height:15%;"     onclick="lmnFinish()"                                    aria-label="Finished"></button>
+<button class="rskin-zone" style="left:57%;top:7%;width:9%;height:20%;"      onclick="document.getElementById('rwModelBtn').click()"  aria-label="Hear word"></button>
+<button class="rskin-zone" style="left:16%;top:34%;width:11%;height:24%;"     onclick="document.getElementById('rwModelBtn').click()"  aria-label="Play model"></button>
+<button class="rskin-zone" style="left:63%;top:34%;width:8%;height:24%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Record"></button>
+<button class="rskin-zone" style="left:70%;top:34%;width:8%;height:24%;"    onclick="document.getElementById('rwUserBtn').click()"   aria-label="Play your recording"></button>
+<button class="rskin-zone" style="left:0.5%;top:61%;width:9%;height:18%;"      onclick="document.getElementById('rwAnalyzeBtn').click()" aria-label="Play both / check"></button>
+<button class="rskin-zone" style="left:11%;top:80%;width:12%;height:18%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Re-record"></button>
+<button class="rskin-zone" style="left:44%;top:80%;width:12%;height:18%;"     onclick="document.getElementById('rwDelBtn').click()"    aria-label="Delete"></button>
+<button class="rskin-zone" style="left:76%;top:80%;width:12%;height:18%;"     onclick="lmnFinish()"                                    aria-label="Finished"></button>
 <div id="rskinCompare"><div id="cmpModel" class="cmp-layer"></div><div id="cmpUser" class="cmp-layer"></div></div>
 <button id="rskinCal" onclick="document.body.classList.toggle('rcal')">Calibrate</button>
 <script>
 (function(){
-  function mirror(srcId,dstId){ var s=document.getElementById(srcId),d=document.getElementById(dstId); if(s&&d) d.innerHTML=s.innerHTML; }
-  function sync(){ mirror('rwModelWave','cmpModel'); mirror('rwUserWave','cmpUser'); }
-  function watch(id){ var w=document.getElementById(id); if(w) new MutationObserver(sync).observe(w,{childList:true,subtree:true}); }
-  function init(){ watch('rwModelWaveWrap'); watch('rwUserWaveWrap'); sync(); setTimeout(sync,500); setTimeout(sync,1500); }
+  var NS='http://www.w3.org/2000/svg', observers=[], pending=false;
+  function ensureSvg(pid,sid,cls){
+    var p=document.getElementById(pid); if(!p||document.getElementById(sid))return;
+    var s=document.createElementNS(NS,'svg');
+    s.setAttribute('id',sid); s.setAttribute('viewBox','0 0 100 100');
+    s.setAttribute('preserveAspectRatio','none'); s.setAttribute('class','ln-svg '+cls);
+    p.appendChild(s);
+  }
+  function line(srcId,svgId){
+    var src=document.getElementById(srcId), svg=document.getElementById(svgId);
+    if(!src||!svg)return;
+    var bars=src.querySelectorAll('.rw-wave-bar'), n=bars.length;
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    if(!n)return;
+    var pts='';
+    for(var i=0;i<n;i++){
+      var h=parseFloat(bars[i].style.height)||0; h=h<0?0:(h>100?100:h);
+      var x=(n===1)?50:(i/(n-1))*100, y=50-(h/100)*45;
+      pts+=(pts?' ':'')+x.toFixed(2)+','+y.toFixed(2);
+    }
+    var pl=document.createElementNS(NS,'polyline');
+    pl.setAttribute('points',pts); pl.setAttribute('fill','none');
+    pl.setAttribute('stroke','currentColor'); pl.setAttribute('stroke-width','2.2');
+    pl.setAttribute('stroke-linejoin','round'); pl.setAttribute('stroke-linecap','round');
+    pl.setAttribute('vector-effect','non-scaling-stroke');
+    svg.appendChild(pl);
+  }
+  function disc(){ observers.forEach(function(o){o.obs.disconnect();}); }
+  function conn(){ observers.forEach(function(o){o.obs.observe(o.t,{childList:true,subtree:true});}); }
+  function render(){
+    disc();
+    ensureSvg('rwModelWaveWrap','lnModelSlot','ln-blue');
+    ensureSvg('rwUserWaveWrap','lnUserSlot','ln-red');
+    ensureSvg('cmpModel','lnCmpModel','ln-blue');
+    ensureSvg('cmpUser','lnCmpUser','ln-red');
+    line('rwModelWave','lnModelSlot'); line('rwModelWave','lnCmpModel');
+    line('rwUserWave','lnUserSlot');   line('rwUserWave','lnCmpUser');
+    conn();
+  }
+  function schedule(){ if(pending)return; pending=true; requestAnimationFrame(function(){pending=false;render();}); }
+  function init(){
+    ['rwModelWaveWrap','rwUserWaveWrap'].forEach(function(id){
+      var t=document.getElementById(id); if(t) observers.push({obs:new MutationObserver(schedule),t:t});
+    });
+    conn(); render(); setTimeout(render,400); setTimeout(render,1200);
+  }
   if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded',init);
 })();
 </script>
