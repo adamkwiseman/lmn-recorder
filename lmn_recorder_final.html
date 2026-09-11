@@ -510,12 +510,6 @@ body.rcal .rskin-zone { outline:2px dashed #e53935; background:rgba(229,57,53,.2
 body.rcal #rwModelWaveWrap, body.rcal #rwUserWaveWrap { outline:2px dashed #16a34a; }
 body.rcal #rskinCompare { outline:2px dashed #7c3aed; }
 
-/* ===== LMN RESKIN — line waveforms + side-by-side compare ===== */
-#rwModelWaveWrap .rw-wave-bar, #rwUserWaveWrap .rw-wave-bar { display:none !important; }
-.ln-svg { position:absolute; inset:0; width:100%; height:100%; display:block; overflow:visible; }
-.ln-blue { color:#1565c0; } .ln-red { color:#e53935; }
-#rskinCompare { display:flex; gap:3%; align-items:center; }
-#cmpModel, #cmpUser { position:relative; inset:auto; flex:1 1 50%; width:auto; height:100%; display:block; background:transparent; }
 </style>
 </head>
 <body>
@@ -1323,52 +1317,10 @@ body.rcal #rskinCompare { outline:2px dashed #7c3aed; }
 <button id="rskinCal" onclick="document.body.classList.toggle('rcal')">Calibrate</button>
 <script>
 (function(){
-  var NS='http://www.w3.org/2000/svg', observers=[], pending=false;
-  function ensureSvg(pid,sid,cls){
-    var p=document.getElementById(pid); if(!p||document.getElementById(sid))return;
-    var s=document.createElementNS(NS,'svg');
-    s.setAttribute('id',sid); s.setAttribute('viewBox','0 0 100 100');
-    s.setAttribute('preserveAspectRatio','none'); s.setAttribute('class','ln-svg '+cls);
-    p.appendChild(s);
-  }
-  function line(srcId,svgId){
-    var src=document.getElementById(srcId), svg=document.getElementById(svgId);
-    if(!src||!svg)return;
-    var bars=src.querySelectorAll('.rw-wave-bar'), n=bars.length;
-    while(svg.firstChild) svg.removeChild(svg.firstChild);
-    if(!n)return;
-    var pts='';
-    for(var i=0;i<n;i++){
-      var h=parseFloat(bars[i].style.height)||0; h=h<0?0:(h>100?100:h);
-      var x=(n===1)?50:(i/(n-1))*100, y=50-(h/100)*45;
-      pts+=(pts?' ':'')+x.toFixed(2)+','+y.toFixed(2);
-    }
-    var pl=document.createElementNS(NS,'polyline');
-    pl.setAttribute('points',pts); pl.setAttribute('fill','none');
-    pl.setAttribute('stroke','currentColor'); pl.setAttribute('stroke-width','2.2');
-    pl.setAttribute('stroke-linejoin','round'); pl.setAttribute('stroke-linecap','round');
-    pl.setAttribute('vector-effect','non-scaling-stroke');
-    svg.appendChild(pl);
-  }
-  function disc(){ observers.forEach(function(o){o.obs.disconnect();}); }
-  function conn(){ observers.forEach(function(o){o.obs.observe(o.t,{childList:true,subtree:true});}); }
-  function render(){
-    disc();
-    ensureSvg('rwModelWaveWrap','lnModelSlot','ln-blue');
-    ensureSvg('rwUserWaveWrap','lnUserSlot','ln-red');
-    ensureSvg('cmpModel','lnCmpModel','ln-blue');
-    ensureSvg('cmpUser','lnCmpUser','ln-red');
-    line('rwModelWave','lnModelSlot'); line('rwModelWave','lnCmpModel');
-    line('rwUserWave','lnUserSlot');   line('rwUserWave','lnCmpUser');
-    conn();
-  }
-  function schedule(){ if(pending)return; pending=true; requestAnimationFrame(function(){pending=false;render();}); }
-  function init(){
-    ['rwModelWaveWrap','rwUserWaveWrap'].forEach(function(id){
-      var t=document.getElementById(id); if(t) observers.push({obs:new MutationObserver(schedule),t:t});
-    });
-    conn(); render(); setTimeout(render,400); setTimeout(render,1200);
-  }
+  function mirror(srcId,dstId){ var s=document.getElementById(srcId),d=document.getElementById(dstId); if(s&&d) d.innerHTML=s.innerHTML; }
+  function sync(){ mirror('rwModelWave','cmpModel'); mirror('rwUserWave','cmpUser'); }
+  function watch(id){ var w=document.getElementById(id); if(w) new MutationObserver(sync).observe(w,{childList:true,subtree:true}); }
+  function init(){ watch('rwModelWaveWrap'); watch('rwUserWaveWrap'); sync(); setTimeout(sync,500); setTimeout(sync,1500); }
   if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded',init);
 })();
 </script>
