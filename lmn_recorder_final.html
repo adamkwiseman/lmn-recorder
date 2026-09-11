@@ -511,22 +511,22 @@ body.rcal #rwModelWaveWrap, body.rcal #rwUserWaveWrap { outline:2px dashed #16a3
 body.rcal #rskinCompare { outline:2px dashed #7c3aed; }
 
 
-/* ===== LMN RESKIN — grading panel (row 3, right) ===== */
-#rwScore { position:fixed; z-index:34; left:49%; top:52%; width:49%; height:22%; margin:0; padding:0.7% 1.4%; border:1px solid #dde6f5; border-radius:12px; background:rgba(255,255,255,.96); box-shadow:0 3px 12px rgba(0,0,0,.28); overflow:hidden; box-sizing:border-box; }
-#rwScore.show { display:flex; flex-direction:column; justify-content:center; gap:4px; }
+/* ===== LMN RESKIN — grading results card (floats after check) ===== */
+#rwScore { position:fixed; z-index:34; left:49%; top:36%; width:49%; height:40%; margin:0; padding:1vw 1.4vw; border:1px solid #dde6f5; border-radius:1.4vw; background:rgba(255,255,255,.97); box-shadow:0 3px 14px rgba(0,0,0,.30); overflow:hidden; box-sizing:border-box; }
+#rwScore.show { display:flex; flex-direction:column; justify-content:center; gap:0.7vw; }
 #rwScoreIco, #rwDetail { display:none !important; }
-#rwScore .rw-score-top { display:flex; align-items:center; justify-content:space-between; margin:0; padding:0; gap:8px; }
-#rwVerdict { font-family:'Lexend',sans-serif; font-weight:700; font-size:min(2.6vw,18px); color:#1e3a6e; }
-#rwScoreNum { font-family:'Lexend',sans-serif; font-weight:800; font-size:min(4.2vw,30px); line-height:1; color:#1e3a6e; }
+#rwScore .rw-score-top { display:flex; align-items:baseline; justify-content:space-between; margin:0; padding:0; gap:1vw; }
+#rwVerdict { font-family:'Lexend',sans-serif; font-weight:700; font-size:2.2vw; color:#1e3a6e; white-space:nowrap; }
+#rwScoreNum { font-family:'Lexend',sans-serif; font-weight:800; font-size:3.4vw; line-height:1; color:#1e3a6e; }
 #rwScore.pass #rwScoreNum, #rwScore.pass #rwVerdict { color:#17a06a; }
 #rwScore.okay #rwScoreNum, #rwScore.okay #rwVerdict { color:#e08a00; }
 #rwScore.fail #rwScoreNum, #rwScore.fail #rwVerdict { color:#c0392b; }
-#rwScore .rw-score-bars { display:flex; flex-direction:column; gap:3px; margin:0; }
-#rwScore .rw-met { display:flex; align-items:center; gap:6px; margin:0; }
-#rwScore .rw-met-l { font-size:min(1.9vw,12px); width:44px; color:#5a6b85; font-weight:600; flex-shrink:0; }
-#rwScore .rw-bar-bg { flex:1; height:6px; background:#e6ecf5; border-radius:4px; overflow:hidden; }
-#rwScore .rw-bar-f { height:100%; background:#2f6fed; border-radius:4px; }
-#rwScore .rw-met-p { font-size:min(1.8vw,11px); width:30px; text-align:right; color:#5a6b85; font-weight:700; flex-shrink:0; }
+#rwScore .rw-score-bars { display:flex; flex-direction:column; gap:0.6vw; margin:0; }
+#rwScore .rw-met { display:flex; align-items:center; gap:0.8vw; margin:0; }
+#rwScore .rw-met-l { font-size:1.5vw; width:6vw; color:#5a6b85; font-weight:600; flex-shrink:0; }
+#rwScore .rw-bar-bg { flex:1; height:1.1vw; background:#e6ecf5; border-radius:0.6vw; overflow:hidden; }
+#rwScore .rw-bar-f { height:100%; background:#2f6fed; border-radius:0.6vw; }
+#rwScore .rw-met-p { font-size:1.4vw; width:3.5vw; text-align:right; color:#5a6b85; font-weight:700; flex-shrink:0; }
 </style>
 </head>
 <body>
