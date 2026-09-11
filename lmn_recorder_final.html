@@ -492,18 +492,18 @@
   .rw-ov-btn i { font-size: 18px; }
 
 /* ===== LMN RESKIN (Stage 2) — art skin + control zones ===== */
-#rskin { position:fixed; inset:0; z-index:30; background:url('https://res.cloudinary.com/dvokel99y/image/upload/v1789099433/Listen_and_practice_button_ufjgpa.png') center/100% 100% no-repeat; }
+#rskin { position:fixed; inset:0; z-index:30; background:url('https://res.cloudinary.com/dvokel99y/image/upload/v1789163123/SEPTEMBER_11_RECORD_PANEL_hy8xq7.png') center/100% 100% no-repeat; }
 .rskin-zone { position:fixed; z-index:31; background:transparent; border:none; padding:0; margin:0; cursor:pointer; }
-#rwPhraseText { position:fixed; z-index:32; left:20%; top:5%; width:54%; height:24%; display:flex; align-items:center; justify-content:center; text-align:center; color:#1e3a6e; font-family:'Lexend',sans-serif; font-weight:700; font-size:min(4.4vw,30px); line-height:1.15; margin:0; padding:0 1%; background:transparent; border:none; min-height:0; }
+#rwPhraseText { position:fixed; z-index:32; left:8%; top:4%; width:84%; height:21%; display:flex; align-items:center; justify-content:center; text-align:center; color:#1e3a6e; font-family:'Lexend',sans-serif; font-weight:700; font-size:min(4.4vw,30px); line-height:1.15; margin:0; padding:0 1%; background:transparent; border:none; min-height:0; }
 body.rcal .rskin-zone { outline:2px dashed #e53935; background:rgba(229,57,53,.20); }
 #rskinCal { position:fixed; top:6px; left:6px; z-index:60; font:12px/1 sans-serif; background:#14181f; color:#fff; border:none; border-radius:7px; padding:5px 9px; cursor:pointer; opacity:.85; }
 
 /* ===== LMN RESKIN (Stage 3 + compare) ===== */
-#rwModelWaveWrap { position:fixed; z-index:32; left:26%; top:36%; width:22%; height:17%; overflow:hidden; }
-#rwUserWaveWrap  { position:fixed; z-index:32; left:78%; top:36%; width:17%; height:17%; overflow:hidden; }
+#rwModelWaveWrap { position:fixed; z-index:32; left:26%; top:32%; width:22%; height:16%; overflow:hidden; }
+#rwUserWaveWrap  { position:fixed; z-index:32; left:72%; top:32%; width:25%; height:16%; overflow:hidden; }
 #rwModelWaveWrap .rw-wave, #rwUserWaveWrap .rw-wave { justify-content:center; height:100%; }
 #rwModelWaveWrap .rw-wave-bar, #rwUserWaveWrap .rw-wave-bar { flex:1 1 0; width:auto; min-width:1px; max-width:4px; }
-#rskinCompare { position:fixed; z-index:32; left:9%; top:62%; width:89%; height:15%; overflow:hidden; }
+#rskinCompare { position:fixed; z-index:32; left:3%; top:58%; width:94%; height:13%; overflow:hidden; }
 .cmp-layer { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:2px; height:100%; }
 #cmpModel .rw-wave-bar { flex:1 1 0; width:auto; min-width:1px; max-width:4px; background:#1565c0; opacity:.5; }
 #cmpUser  .rw-wave-bar { flex:1 1 0; width:auto; min-width:1px; max-width:4px; background:#e53935; opacity:.5; }
@@ -1305,14 +1305,13 @@ body.rcal #rskinCompare { outline:2px dashed #7c3aed; }
 
 <!-- ===== LMN RESKIN (Stage 2) overlay ===== -->
 <div id="rskin"></div>
-<button class="rskin-zone" style="left:57%;top:7%;width:9%;height:20%;"      onclick="document.getElementById('rwModelBtn').click()"  aria-label="Hear word"></button>
-<button class="rskin-zone" style="left:16%;top:34%;width:11%;height:24%;"     onclick="document.getElementById('rwModelBtn').click()"  aria-label="Play model"></button>
-<button class="rskin-zone" style="left:63%;top:34%;width:8%;height:24%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Record"></button>
-<button class="rskin-zone" style="left:70%;top:34%;width:8%;height:24%;"    onclick="document.getElementById('rwUserBtn').click()"   aria-label="Play your recording"></button>
-<button class="rskin-zone" style="left:0.5%;top:61%;width:9%;height:18%;"      onclick="document.getElementById('rwAnalyzeBtn').click()" aria-label="Play both / check"></button>
-<button class="rskin-zone" style="left:11%;top:80%;width:12%;height:18%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Re-record"></button>
-<button class="rskin-zone" style="left:44%;top:80%;width:12%;height:18%;"     onclick="document.getElementById('rwDelBtn').click()"    aria-label="Delete"></button>
-<button class="rskin-zone" style="left:76%;top:80%;width:12%;height:18%;"     onclick="lmnFinish()"                                    aria-label="Finished"></button>
+<button class="rskin-zone" style="left:16%;top:30%;width:9%;height:22%;"     onclick="document.getElementById('rwModelBtn').click()"  aria-label="Play model"></button>
+<button class="rskin-zone" style="left:59%;top:31%;width:7%;height:20%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Record"></button>
+<button class="rskin-zone" style="left:64%;top:31%;width:7%;height:20%;"    onclick="document.getElementById('rwUserBtn').click()"   aria-label="Play your recording"></button>
+<button class="rskin-zone" style="left:2%;top:57%;width:96%;height:15%;z-index:33;"      onclick="document.getElementById('rwAnalyzeBtn').click()" aria-label="Play both / check"></button>
+<button class="rskin-zone" style="left:12%;top:76%;width:12%;height:20%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Re-record"></button>
+<button class="rskin-zone" style="left:44%;top:76%;width:12%;height:20%;"     onclick="document.getElementById('rwDelBtn').click()"    aria-label="Delete"></button>
+<button class="rskin-zone" style="left:76%;top:76%;width:12%;height:20%;"     onclick="lmnFinish()"                                    aria-label="Finished"></button>
 <div id="rskinCompare"><div id="cmpModel" class="cmp-layer"></div><div id="cmpUser" class="cmp-layer"></div></div>
 <button id="rskinCal" onclick="document.body.classList.toggle('rcal')">Calibrate</button>
 <script>
