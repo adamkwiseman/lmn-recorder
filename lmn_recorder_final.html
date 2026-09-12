@@ -521,6 +521,15 @@ body.rcal #rskinCompare { outline:2px dashed #7c3aed; }
 #rwScore.pass #rwScoreNum, #rwScore.pass #rwVerdict { color:#17a06a; }
 #rwScore.okay #rwScoreNum, #rwScore.okay #rwVerdict { color:#e08a00; }
 #rwScore.fail #rwScoreNum, #rwScore.fail #rwVerdict { color:#c0392b; }
+
+/* ===== INLINE MODE — transparent, on-card ===== */
+html, body { background:transparent !important; }
+#rskin, #rskinCompare { display:none !important; }
+.rw { visibility:hidden !important; }
+#rwModelWaveWrap, #rwUserWaveWrap, #rwScore, #rwOverlay { visibility:visible !important; }
+#rwModelWaveWrap { left:34.5% !important; top:13% !important; width:62% !important; height:16% !important; }
+#rwUserWaveWrap  { left:34.5% !important; top:36% !important; width:61% !important; height:16% !important; }
+#rwScore { left:2% !important; top:66% !important; width:95% !important; height:26% !important; background:transparent !important; border:none !important; box-shadow:none !important; }
 </style>
 </head>
 <body>
@@ -1316,13 +1325,13 @@ body.rcal #rskinCompare { outline:2px dashed #7c3aed; }
 
 <!-- ===== LMN RESKIN (Stage 2) overlay ===== -->
 <div id="rskin"></div>
-<button class="rskin-zone" style="left:8%;top:33%;width:7%;height:18%;"     onclick="document.getElementById('rwModelBtn').click()"  aria-label="Play model"></button>
-<button class="rskin-zone" style="left:55.5%;top:33%;width:5%;height:18%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Record"></button>
-<button class="rskin-zone" style="left:60%;top:33%;width:5%;height:18%;"    onclick="document.getElementById('rwUserBtn').click()"   aria-label="Play your recording"></button>
-<button class="rskin-zone" style="left:2%;top:56%;width:46%;height:15%;z-index:33;"      onclick="document.getElementById('rwAnalyzeBtn').click()" aria-label="Play both / check"></button>
-<button class="rskin-zone" style="left:12%;top:76%;width:12%;height:20%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Re-record"></button>
-<button class="rskin-zone" style="left:44%;top:76%;width:12%;height:20%;"     onclick="document.getElementById('rwDelBtn').click()"    aria-label="Delete"></button>
-<button class="rskin-zone" style="left:76%;top:76%;width:12%;height:20%;"     onclick="lmnFinish()"                                    aria-label="Finished"></button>
+<button class="rskin-zone" style="left:31%;top:5%;width:7%;height:20%;"     onclick="document.getElementById('rwModelBtn').click()"  aria-label="Play model"></button>
+<button class="rskin-zone" style="left:22%;top:18%;width:7%;height:21%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Record"></button>
+<button class="rskin-zone" style="left:31%;top:29%;width:7%;height:20%;"    onclick="document.getElementById('rwUserBtn').click()"   aria-label="Play your recording"></button>
+<button class="rskin-zone" style="left:85%;top:16%;width:8%;height:20%;z-index:33;"      onclick="document.getElementById('rwAnalyzeBtn').click()" aria-label="Play both / check"></button>
+<button class="rskin-zone" style="left:-100%;top:0%;width:8%;height:10%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Re-record"></button>
+<button class="rskin-zone" style="left:-100%;top:0%;width:8%;height:10%;"     onclick="document.getElementById('rwDelBtn').click()"    aria-label="Delete"></button>
+<button class="rskin-zone" style="left:-100%;top:0%;width:8%;height:10%;"     onclick="lmnFinish()"                                    aria-label="Finished"></button>
 <div id="rskinCompare"><div id="cmpModel" class="cmp-layer"></div><div id="cmpUser" class="cmp-layer"></div></div>
 <button id="rskinCal" onclick="document.body.classList.toggle('rcal')">Calibrate</button>
 <script>
