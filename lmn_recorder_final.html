@@ -526,9 +526,10 @@ body.rcal #rskinCompare { outline:2px dashed #7c3aed; }
 html, body { background:transparent !important; }
 #rskin, #rskinCompare { display:none !important; }
 .rw { visibility:hidden !important; }
-#rwModelWaveWrap, #rwUserWaveWrap, #rwScore, #rwOverlay { visibility:visible !important; }
-#rwModelWaveWrap { left:34.5% !important; top:9% !important; width:56% !important; height:11% !important; }
-#rwUserWaveWrap  { left:34.5% !important; top:30% !important; width:56% !important; height:11% !important; }
+#rwModelWaveWrap, #rwUserWaveWrap, #rwScore { visibility:visible !important; }
+#rwOverlay { display:none !important; }
+#rwModelWaveWrap { left:34.5% !important; top:9% !important; width:50% !important; height:7% !important; }
+#rwUserWaveWrap  { left:34.5% !important; top:27% !important; width:50% !important; height:7% !important; }
 #rwScore { left:2% !important; top:66% !important; width:95% !important; height:26% !important; background:transparent !important; border:none !important; box-shadow:none !important; }
 body > div[style*="padding:0 0 8px"] { display:none !important; }
 </style>
@@ -745,7 +746,7 @@ body > div[style*="padding:0 0 8px"] { display:none !important; }
   // LEAD_IN_SECS: how many "get ready" counts (3 → shows 3,2,1 then GO).
   //               Set to 0 to skip the countdown and go straight to the
   //               green light + capture. STEP_MS controls the count pace.
-  const LEAD_IN_SECS = 3;
+  const LEAD_IN_SECS = 0;
   const STEP_MS      = 425;
   let recPhase   = 'idle';   // idle | counting | recording
   let liveStream = null;     // the live mic stream (held across countdown → capture)
@@ -1327,7 +1328,7 @@ body > div[style*="padding:0 0 8px"] { display:none !important; }
 <!-- ===== LMN RESKIN (Stage 2) overlay ===== -->
 <div id="rskin"></div>
 <button class="rskin-zone" style="left:31%;top:5%;width:7%;height:20%;"     onclick="document.getElementById('rwModelBtn').click()"  aria-label="Play model"></button>
-<button class="rskin-zone" style="left:22%;top:18%;width:7%;height:21%;z-index:55;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Record"></button>
+<button class="rskin-zone" style="left:20%;top:10%;width:11%;height:36%;z-index:55;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Record"></button>
 <button class="rskin-zone" style="left:31%;top:29%;width:7%;height:20%;"    onclick="document.getElementById('rwUserBtn').click()"   aria-label="Play your recording"></button>
 <button class="rskin-zone" style="left:85%;top:16%;width:8%;height:20%;z-index:33;"      onclick="document.getElementById('rwAnalyzeBtn').click()" aria-label="Play both / check"></button>
 <button class="rskin-zone" style="left:-100%;top:0%;width:8%;height:10%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Re-record"></button>
