@@ -736,7 +736,7 @@ body.rcal #rskinCompare { outline:2px dashed #7c3aed; }
   //               Set to 0 to skip the countdown and go straight to the
   //               green light + capture. STEP_MS controls the count pace.
   const LEAD_IN_SECS = 3;
-  const STEP_MS      = 850;
+  const STEP_MS      = 425;
   let recPhase   = 'idle';   // idle | counting | recording
   let liveStream = null;     // the live mic stream (held across countdown → capture)
   let liveAC     = null, liveAnalyser = null, liveRAF = null;
