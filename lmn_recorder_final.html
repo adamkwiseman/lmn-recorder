@@ -528,6 +528,8 @@ html, body { background:transparent !important; }
 .rw { visibility:hidden !important; }
 #rwModelWaveWrap, #rwUserWaveWrap, #rwScore { visibility:visible !important; }
 #rwOverlay { display:none !important; }
+#rskinCal { display:none !important; }
+body.rcal #rwScore { outline:2px dashed #e08a00 !important; }
 #rwModelWaveWrap { left:40% !important; top:9% !important; width:42% !important; height:9% !important; }
 #rwUserWaveWrap  { left:40% !important; top:28% !important; width:42% !important; height:8% !important; }
 #rwScore { left:28% !important; top:70% !important; width:60% !important; height:25% !important; background:transparent !important; border:none !important; box-shadow:none !important; }
@@ -1345,5 +1347,6 @@ body > div[style*="padding:0 0 8px"] { display:none !important; }
   if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded',init);
 })();
 </script>
+<script>window.addEventListener("message",function(e){ if(e&&e.data&&e.data.type==="lmnCal"){ document.body.classList.toggle("rcal", !!e.data.on); } });</script>
 </body>
 </html>
