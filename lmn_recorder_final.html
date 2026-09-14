@@ -1368,17 +1368,17 @@ body.rcal #rwScore { display:flex !important; }
 <option value="uw">Your wave</option>
 <option value="gr">Grade</option>
 </select>
-<div class="calrow"><button onclick="calNudge(0,-1)">↑</button><button onclick="calNudge(-1,0)">←</button><button onclick="calNudge(1,0)">→</button><button onclick="calNudge(0,1)">↓</button></div>
+<div class="calrow"><button onclick="calNudge(0,-2)">↑</button><button onclick="calNudge(-2,0)">←</button><button onclick="calNudge(2,0)">→</button><button onclick="calNudge(0,2)">↓</button></div>
 <div class="calrow">W<button onclick="calSize(-2,0)">−</button><button onclick="calSize(2,0)">+</button> H<button onclick="calSize(0,-2)">−</button><button onclick="calSize(0,2)">+</button></div>
 <div id="calOut"></div>
 <button onclick="calDump()">Show all</button>
 </div>
 <script>
 var calEls={
- rec:{sel:'[aria-label="Record"]',l:19,t:22,w:8,h:20},
- pm:{sel:'[aria-label="Play model"]',l:29,t:8,w:7,h:18},
- pu:{sel:'[aria-label="Play your recording"]',l:29,t:32,w:7,h:18},
- pb:{sel:'[aria-label="Play both / check"]',l:88,t:18,w:10,h:22},
+ rec:{sel:'.rskin-zone[aria-label="Record"]',l:19,t:22,w:8,h:20},
+ pm:{sel:'.rskin-zone[aria-label="Play model"]',l:29,t:8,w:7,h:18},
+ pu:{sel:'.rskin-zone[aria-label="Play your recording"]',l:29,t:32,w:7,h:18},
+ pb:{sel:'.rskin-zone[aria-label="Play both / check"]',l:88,t:18,w:10,h:22},
  mw:{sel:'#rwModelWaveWrap',l:40,t:9,w:42,h:9},
  uw:{sel:'#rwUserWaveWrap',l:40,t:28,w:42,h:8},
  gr:{sel:'#rwScore',l:28,t:70,w:60,h:25}
