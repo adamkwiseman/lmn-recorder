@@ -534,6 +534,15 @@ body.rcal #rwScore { outline:2px dashed #e08a00 !important; }
 #rwUserWaveWrap  { left:40% !important; top:28% !important; width:42% !important; height:8% !important; }
 #rwScore { left:28% !important; top:70% !important; width:60% !important; height:25% !important; background:transparent !important; border:none !important; box-shadow:none !important; }
 body > div[style*="padding:0 0 8px"] { display:none !important; }
+
+/* ===== LIVE CALIBRATOR ===== */
+#calPanel { position:fixed; top:2px; right:2px; z-index:200; display:none; background:rgba(20,24,31,.93); color:#fff; padding:5px 7px; border-radius:8px; font:11px/1.3 sans-serif; }
+body.rcal #calPanel { display:block; }
+body.rcal #rwScore { display:flex !important; }
+#calPanel select { font:11px sans-serif; width:100%; margin-bottom:4px; }
+#calPanel .calrow { display:flex; gap:3px; align-items:center; margin-bottom:3px; }
+#calPanel button { font:13px sans-serif; min-width:24px; padding:3px 6px; cursor:pointer; border:none; border-radius:5px; background:#2f6fed; color:#fff; }
+#calPanel #calOut { font-size:10px; margin:3px 0; color:#bfe; }
 </style>
 </head>
 <body>
@@ -1348,5 +1357,41 @@ body > div[style*="padding:0 0 8px"] { display:none !important; }
 })();
 </script>
 <script>(function(){function rc(on){document.body.classList.toggle("rcal",!!on);}try{if(new URLSearchParams(location.search).get("cal")==="1")rc(true);}catch(e){}window.addEventListener("message",function(e){if(e&&e.data&&e.data.type==="lmnCal")rc(e.data.on);});})();</script>
+<div id="calPanel">
+<select id="calSel">
+<option value="all">◆ All together</option>
+<option value="rec">Record</option>
+<option value="pm">Play model</option>
+<option value="pu">Play yours</option>
+<option value="pb">Check</option>
+<option value="mw">Model wave</option>
+<option value="uw">Your wave</option>
+<option value="gr">Grade</option>
+</select>
+<div class="calrow"><button onclick="calNudge(0,-1)">↑</button><button onclick="calNudge(-1,0)">←</button><button onclick="calNudge(1,0)">→</button><button onclick="calNudge(0,1)">↓</button></div>
+<div class="calrow">W<button onclick="calSize(-2,0)">−</button><button onclick="calSize(2,0)">+</button> H<button onclick="calSize(0,-2)">−</button><button onclick="calSize(0,2)">+</button></div>
+<div id="calOut"></div>
+<button onclick="calDump()">Show all</button>
+</div>
+<script>
+var calEls={
+ rec:{sel:'[aria-label="Record"]',l:19,t:22,w:8,h:20},
+ pm:{sel:'[aria-label="Play model"]',l:29,t:8,w:7,h:18},
+ pu:{sel:'[aria-label="Play your recording"]',l:29,t:32,w:7,h:18},
+ pb:{sel:'[aria-label="Play both / check"]',l:88,t:18,w:10,h:22},
+ mw:{sel:'#rwModelWaveWrap',l:40,t:9,w:42,h:9},
+ uw:{sel:'#rwUserWaveWrap',l:40,t:28,w:42,h:8},
+ gr:{sel:'#rwScore',l:28,t:70,w:60,h:25}
+};
+function calApply(k){var e=calEls[k],el=document.querySelector(e.sel);if(!el)return;el.style.setProperty('left',e.l+'%','important');el.style.setProperty('top',e.t+'%','important');el.style.setProperty('width',e.w+'%','important');el.style.setProperty('height',e.h+'%','important');}
+function calCur(){return document.getElementById('calSel').value;}
+function calNudge(dx,dy){var c=calCur();if(c==='all'){for(var k in calEls){calEls[k].l+=dx;calEls[k].t+=dy;calApply(k);}}else{calEls[c].l+=dx;calEls[c].t+=dy;calApply(c);}calShow();}
+function calSize(dw,dh){var c=calCur();if(c==='all')return;calEls[c].w+=dw;calEls[c].h+=dh;calApply(c);calShow();}
+function calShow(){var c=calCur(),o=document.getElementById('calOut');if(!o)return;if(c==='all'){o.textContent='move all';return;}var e=calEls[c];o.textContent='L'+e.l+' T'+e.t+' W'+e.w+' H'+e.h;}
+function calDump(){var t='';for(var k in calEls){var e=calEls[k];t+=k+': left:'+e.l+'% top:'+e.t+'% w:'+e.w+'% h:'+e.h+'%\n';}alert(t);}
+(function(){for(var k in calEls)calApply(k);var s=document.getElementById('calSel');if(s)s.onchange=calShow;
+ if(document.body.classList.contains('rcal')){var v=document.getElementById('rwVerdict'),n=document.getElementById('rwScoreNum');if(v&&!v.textContent)v.textContent='Grade';if(n&&!n.textContent)n.textContent='00%';}
+ calShow();})();
+</script>
 </body>
 </html>
