@@ -530,8 +530,8 @@ html, body { background:transparent !important; }
 #rwOverlay { display:none !important; }
 #rskinCal { display:none !important; }
 body.rcal #rwScore { outline:2px dashed #e08a00 !important; }
-#rwModelWaveWrap { left:40% !important; top:9% !important; width:42% !important; height:9% !important; }
-#rwUserWaveWrap  { left:40% !important; top:28% !important; width:42% !important; height:8% !important; }
+#rwModelWaveWrap { left:39% !important; top:28% !important; width:42% !important; height:9% !important; }
+#rwUserWaveWrap  { left:39% !important; top:51% !important; width:42% !important; height:8% !important; }
 #rwScore { left:28% !important; top:70% !important; width:60% !important; height:25% !important; background:transparent !important; border:none !important; box-shadow:none !important; }
 body > div[style*="padding:0 0 8px"] { display:none !important; }
 
@@ -1338,10 +1338,10 @@ body.rcal #rwScore { display:flex !important; }
 
 <!-- ===== LMN RESKIN (Stage 2) overlay ===== -->
 <div id="rskin"></div>
-<button class="rskin-zone" style="left:29%;top:8%;width:7%;height:18%;"     onclick="document.getElementById('rwModelBtn').click()"  aria-label="Play model"></button>
-<button class="rskin-zone" style="left:19%;top:22%;width:8%;height:20%;z-index:55;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Record"></button>
-<button class="rskin-zone" style="left:29%;top:32%;width:7%;height:18%;"    onclick="document.getElementById('rwUserBtn').click()"   aria-label="Play your recording"></button>
-<button class="rskin-zone" style="left:88%;top:18%;width:10%;height:22%;z-index:33;"      onclick="document.getElementById('rwAnalyzeBtn').click()" aria-label="Play both / check"></button>
+<button class="rskin-zone" style="left:29%;top:22%;width:7%;height:18%;"     onclick="document.getElementById('rwModelBtn').click()"  aria-label="Play model"></button>
+<button class="rskin-zone" style="left:19%;top:33%;width:8%;height:20%;z-index:55;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Record"></button>
+<button class="rskin-zone" style="left:29%;top:45%;width:7%;height:18%;"    onclick="document.getElementById('rwUserBtn').click()"   aria-label="Play your recording"></button>
+<button class="rskin-zone" style="left:86%;top:33%;width:10%;height:22%;z-index:33;"      onclick="document.getElementById('rwAnalyzeBtn').click()" aria-label="Play both / check"></button>
 <button class="rskin-zone" style="left:-100%;top:0%;width:8%;height:10%;"      onclick="document.getElementById('rwRecBtn').click()"    aria-label="Re-record"></button>
 <button class="rskin-zone" style="left:-100%;top:0%;width:8%;height:10%;"     onclick="document.getElementById('rwDelBtn').click()"    aria-label="Delete"></button>
 <button class="rskin-zone" style="left:-100%;top:0%;width:8%;height:10%;"     onclick="lmnFinish()"                                    aria-label="Finished"></button>
@@ -1365,7 +1365,7 @@ body.rcal #rwScore { display:flex !important; }
 <script>
 (function(){
  var els={rec:'.rskin-zone[aria-label="Record"]',pm:'.rskin-zone[aria-label="Play model"]',pu:'.rskin-zone[aria-label="Play your recording"]',pb:'.rskin-zone[aria-label="Play both / check"]',mw:'#rwModelWaveWrap',uw:'#rwUserWaveWrap',gr:'#rwScore'};
- var pos={rec:{l:19,t:22,w:8,h:20},pm:{l:29,t:8,w:7,h:18},pu:{l:29,t:32,w:7,h:18},pb:{l:88,t:18,w:10,h:22},mw:{l:40,t:9,w:42,h:9},uw:{l:40,t:28,w:42,h:8},gr:{l:28,t:70,w:60,h:25}};
+ var pos={rec:{l:19,t:33,w:8,h:20},pm:{l:29,t:22,w:7,h:18},pu:{l:29,t:45,w:7,h:18},pb:{l:86,t:33,w:10,h:22},mw:{l:39,t:28,w:42,h:9},uw:{l:39,t:51,w:42,h:8},gr:{l:28,t:70,w:60,h:25}};
  var cur=null,drag=null,moved=false;
  function el(k){return document.querySelector(els[k]);}
  function apply(k){var e=el(k);if(!e)return;var p=pos[k];e.style.setProperty('left',p.l+'%','important');e.style.setProperty('top',p.t+'%','important');e.style.setProperty('width',p.w+'%','important');e.style.setProperty('height',p.h+'%','important');}
@@ -1377,9 +1377,7 @@ body.rcal #rwScore { display:flex !important; }
  document.addEventListener('click',function(ev){if(!inCal())return;for(var k in els){if(ev.target===el(k)||(ev.target.closest&&ev.target.closest(els[k]))){ev.preventDefault();ev.stopPropagation();return;}}},true);
  window.calSize=function(dw,dh){if(!cur)return;pos[cur].w+=dw;pos[cur].h+=dh;apply(cur);readout();};
  window.calDump=function(){var t='';for(var k in pos){var p=pos[k];t+=k+': left:'+Math.round(p.l)+'% top:'+Math.round(p.t)+'% w:'+p.w+'% h:'+p.h+'%\n';}alert(t);};
- function init(){for(var k in els){apply(k);var e=el(k);if(e)e.style.setProperty('cursor','move','important');}
-  if(inCal()){var v=document.getElementById('rwVerdict'),n=document.getElementById('rwScoreNum');if(v&&!v.textContent)v.textContent='Grade';if(n&&!n.textContent)n.textContent='00%';}
-  readout();}
+ function init(){if(inCal()){for(var k in els){apply(k);var e=el(k);if(e)e.style.setProperty('cursor','move','important');}var v=document.getElementById('rwVerdict'),n=document.getElementById('rwScoreNum');if(v&&!v.textContent)v.textContent='Grade';if(n&&!n.textContent)n.textContent='00%';}readout();}
  if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
 })();
 </script>
